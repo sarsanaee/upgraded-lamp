@@ -1,0 +1,11 @@
+Flask
+flask-admin==1.3.0
+flask-wtf
+sqlalchemy
+uwsgi
+Flask-Migrate
+psycopg2
+Flask-Login==0.2.6
+requests
+uwsgitop
+alembic
