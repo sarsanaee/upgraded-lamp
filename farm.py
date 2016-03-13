@@ -1,35 +1,48 @@
 # -*- coding: utf-8 -*-
 from flask import Flask, request, abort
 from database import db_session
-from models import User, Level, Transaction, Xmlbase, Giftcards, AdminUsers, Store
-from database import init_db
+from models import User, Level, Transaction, Xmlbase, Giftcards, AdminUsers, Store,\
+    GameDb, Special_Packages, Api
+from database import init_db, Base
 from flask import jsonify, json
 from flask_hmac import Hmac
 import datetime
 from tools import Tools
 from sqlalchemy import exc
 import re
+from celery import Celery
 from flask_admin import Admin
 from flask.ext import login
 from myadmin import UserView, GiftCardView, LevelView, \
     MyAdminIndexView, AdminUsersView, XmlBaseView, \
-    TransactionView, StoreView
+    TransactionView, StoreView, GameDbView, SpecialPackView, ApiView
 from werkzeug.contrib.cache import SimpleCache
-
+from flask_script import Manager
+from flask_migrate import Migrate, MigrateCommand
 cache = SimpleCache()
 from flask_admin.contrib.sqla import ModelView
 
 import requests
 import logging
 
-#logging.basicConfig(filename='/tmp/db.log')
-#logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
+# logging.basicConfig(filename='/tmp/db.log')
+# logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
 
 init_db()
 app = Flask(__name__)
 app.config['HMAC_KEY'] = 'hBV+H7dt2aD/R3z'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:yokohama@localhost/FarmBase'
+migrate = Migrate(app, Base)
+
+manager = Manager(app)
+manager.add_command('db', MigrateCommand)
 app.debug = True
 hm = Hmac(app)
+
+app.config.update(
+    CELERY_BROKER_URL='redis://localhost:6379',
+    CELERY_RESULT_BACKEND='redis://localhost:6379'
+)
 
 
 # Initialize flask-login
@@ -46,10 +59,29 @@ def init_login():
 init_login()
 
 
+def make_celery(app):
+    celery = Celery(app.import_name, broker=app.config['CELERY_BROKER_URL'])
+    celery.conf.update(app.config)
+    TaskBase = celery.Task
+
+    class ContextTask(TaskBase):
+        abstract = True
+
+        def __call__(self, *args, **kwargs):
+            with app.app_context():
+                return TaskBase.__call__(self, *args, **kwargs)
+
+    celery.Task = ContextTask
+    return celery
+
+
+celery = make_celery(app)
+
 # app.config['CSRF_ENABLED'] = True
 # flask_wtf.CsrfProtect(app)
 
-packages ={ "Diamonds_G":7, "Diamonds_F":6, "Diamonds_E":5, "Diamonds_D":4, "Diamonds_C":3, "Diamonds_B":2, "Diamonds_A":1}
+packages = {"Diamonds_G": 7, "Diamonds_F": 6, "Diamonds_E": 5, "Diamonds_D": 4, "Diamonds_C": 3, "Diamonds_B": 2,
+            "Diamonds_A": 1}
 
 
 class SetEncoder(json.JSONEncoder):
@@ -70,6 +102,9 @@ admin.add_view(XmlBaseView(Xmlbase, db_session))
 admin.add_view(GiftCardView(Giftcards, db_session))
 admin.add_view(AdminUsersView(AdminUsers, db_session))
 admin.add_view(StoreView(Store, db_session))
+admin.add_view(GameDbView(GameDb, db_session))
+admin.add_view(SpecialPackView(Special_Packages, db_session))
+admin.add_view(ApiView(Api, db_session))
 
 app.secret_key = '\xa1xec[\tg`\xac\x96\xafv\xff\xf6\x04\xa2bT\x13\xb6\xca\xf9@\xf2'
 cafebazaar_access_token = ""
@@ -84,7 +119,6 @@ def time_server():
     return response
 
 
-
 @app.route('/V1/getid', methods=['POST'])
 @hm.check_hmac
 def get_id():
@@ -95,6 +129,21 @@ def get_id():
             response.status_code = 200
             return response
     abort(404)
+
+
+
+@app.route('/login', methods=['POST'])
+@hm.check_hmac
+def login():
+    retrieved_user = User.query.filter_by(id=request.json.get('id')).first()
+    if retrieved_user and retrieved_user.password == request.json.get('password'):
+        response = jsonify({'status': 'OK'})
+        response.status_code = 200
+        return response
+    abort(403)
+
+
+
 
 @app.route('/level_creator', methods=['GET'])
 def level_creator():
@@ -109,6 +158,38 @@ def level_creator():
     response.status_code = 200
     return response
 
+
+@app.route('/V2/coin/<int:id>', methods=['GET'])
+def get_gold(id):
+    gamedb = GameDb.query.filter_by(user_id=id).first()
+    if gamedb:
+        response = jsonify({"gold": gamedb.Coins})
+        response.status_code = 200
+        return response
+    abort(404)
+
+
+@app.route('/version', methods=['GET'])
+def get_last_version():
+    version = Api.query.first().version
+    response = jsonify({"version": version})
+    response.status_code = 200
+    return response
+
+
+@app.route('/V2/coin', methods=['POST'])
+def set_gold():
+    retrieved_user = User.query.filter_by(username=request.json.get('username')).first()
+    if retrieved_user:
+        update_experice()
+        retrieved_user.gold = request.json.get('Coins')
+        db_session.commit()
+        response = jsonify()
+        response.status_code = 200
+        return response
+    abort(404)
+
+
 @app.route('/V1/purchase_log', methods=['POST'])
 @hm.check_hmac
 def client_logs():
@@ -120,21 +201,35 @@ def client_logs():
     return response
 
 
+def update_experice():
+    pass
 
-#
-# @app.route('/login', methods=['POST'])
-# def login():
-#     user = User.query.filter(User.username == request.json['username'],
-#                              User.password == request.json['password']).first()
-#     if user:
-#         response = jsonify({'status': '200'})
-#         response.status_code = 200
-#         return response
-#     else:
-#         response = jsonify({'status': '401'})
-#         response.status_code = 401
-#         return response
-#
+
+@app.route('/gamedb/<int:id>', methods=['GET'])
+def get_player_db(id):
+    gamedb = GameDb.query.filter_by(user_id=id).first()
+    if (gamedb):
+        print(gamedb.to_dict())
+        response = jsonify(gamedb.to_dict())
+        response.status_code = 200
+        return response
+    abort(404)
+
+
+@app.route('/gamedb', methods=['POST'])
+@hm.check_hmac
+def set_player_db():
+    try:
+        gamedb = GameDb(request.json)
+        db_session.add(gamedb)
+        db_session.commit()
+        response = jsonify({"status": "ok"})
+        response.status_code = 201
+    except Exception:
+        response = jsonify({"status": "No User Found"})
+        response.status_code = 404
+    return response
+
 
 @app.route('/register', methods=['POST'])
 @hm.check_hmac
@@ -175,24 +270,6 @@ def get_my_score():
     if retrieved_user:
         return jsonify({'score': retrieved_user.score, 'status': 'ok'})
     return jsonify({'status': 'not ok', 'description': 'No User Found'})
-
-
-#
-# @app.route('/getboard', methods=['POST'])
-# @hm.check_hmac
-# def get_score_board():
-#     retrieved_users = User.query.order_by(User.score.desc()).limit(10).all()
-#
-#     username_list = []
-#     score_list = []
-#
-#     for i in retrieved_users:
-#         username_list.append(i.username)
-#         score_list.append(i.score)
-#
-#     if retrieved_users:
-#         return jsonify({'usernames': username_list, 'score': score_list, 'status': 'ok'})
-#     return jsonify({'status': 'not ok', 'description': 'No User Found'})
 
 
 @app.route('/finish_level', methods=['POST'])
@@ -276,38 +353,6 @@ def get_special_offer():
         return response
 
 
-# @app.route('/top_ten/level/<int:level>/<int:offset>/<int:count>', methods=['POST'])
-# @hm.check_hmac
-# def top_ten(level, offset, count):
-#     """
-#     this function is generally about getting users for scrolling feature
-#
-#     :param level: level of the user requester
-#     :param offset: how much it need difference in his information
-#     :param count: how much information he needs
-#     :return: a json notation response
-#     """
-#     ret = Level.query.join(User, User.id == Level.user_id).filter(Level.level == level).order_by(Level.time.asc()).all()
-#     ## we have it before But I have to ask erfan in order to become aware about utilizing this function
-#     found_users = []
-#     scores = []
-#     if offset < len(ret):
-#         count_picker = count if offset + count < len(ret) else offset + count - len(ret) - 1
-#         for i in range(count_picker):
-#             a = ret[offset + i]
-#             username = User.query.filter_by(id=a.user_id).first().username
-#             found_users.append(username)
-#             scores.append(a.time)
-#
-#         found_users = json.dumps(found_users)
-#         scores = json.dumps(scores)
-#         response = jsonify({'status': '200', 'usernames': found_users, 'scores': scores})
-#         response.status_code = 200
-#         return response
-#     else:
-#         abort(404)
-
-
 @app.route('/score_corrector', methods=['GET'])
 def score_corrector():
     users = User.query.filter_by().all()
@@ -324,33 +369,6 @@ def score_corrector():
     return response
 
 
-#
-# @app.route('/top_ten/ranking/<int:offset>/<int:count>', methods=['POST'])
-# @hm.check_hmac
-# def ranking(offset, count):
-#     ret = cache.get('user_sorted_by_score')
-#     if ret is None:
-#         ret = User.query.filter().order_by(User.score.asc()).all()
-#         cache.set('user_sorted_by_score', ret, timeout= 5*60)
-#     found_users = []
-#     scores = []
-#     if offset < len(ret):
-#         count_picker = count if offset + count < len(ret) else offset + count - len(ret) - 1
-#         for i in range(count_picker):
-#             a = ret[offset + i]
-#             found_users.append(a.username)
-#             scores.append(431880 - a.score)
-#
-#         found_users = json.dumps(found_users)
-#         scores = json.dumps(scores)
-#
-#         response = jsonify({'status': '200', 'usernames': found_users, 'scores': scores})
-#         response.status_code = 200
-#         return response
-#     else:
-#         abort(404)
-
-
 @app.route('/levelsStauts/', methods=['POST'])
 @hm.check_hmac
 def levels_stauts():
@@ -360,7 +378,7 @@ def levels_stauts():
             id = int(request.json.get("id"))
             retrieved_user = User.query.filter_by(id=id).first()
         else:
-            retrieved_user = User.query.filter_by(username= request.json.get("id")).first()
+            retrieved_user = User.query.filter_by(username=request.json.get("id")).first()
     else:
         username = request.json['username']
         retrieved_user = User.query.filter_by(username=username).first()
@@ -388,7 +406,7 @@ def updatemylevels():
             id = int(request.json.get("id")[0])
             retrieved_user = User.query.filter_by(id=id).first()
         else:
-            retrieved_user = User.query.filter_by(username= request.json.get("id")[0]).first()
+            retrieved_user = User.query.filter_by(username=request.json.get("id")[0]).first()
 
     else:
         username = request.json['username'][0]
@@ -420,10 +438,13 @@ def updatemylevels():
 @app.route('/getStore', methods=['POST'])
 @hm.check_hmac
 def get_store():
+    '''
     store = cache.get('store')
     if store is None:
         store = db_session.query(Store).all()
         cache.set('store', store, timeout=5 * 60)
+    '''
+    store = db_session.query(Store).all()
     message = ''
     for i in store:
         message += str(i.number) + ':' + str(i.price) + ":" + str(i.diamond) + ":" + str(i.discount) + '\n'
@@ -516,6 +537,36 @@ def set_char_bought():
     abort(404)
 
 
+@app.route('/wins/<int:id_nums>', methods=['GET'])
+def wins_number(id_nums):
+    retrieved_user = User.query.filter_by(id=id_nums).first()
+    if retrieved_user:
+        response = jsonify({"status": "OK", "wins": retrieved_user.wins})
+        response.status_code = 200
+        return response
+    abort(404)
+
+
+@app.route('/wins/taksossharamje', methods=['POST'])
+def win_game():
+    retrieved_user = User.query.filter_by(username=request.json["winner"]).first()
+    if retrieved_user:
+        retrieved_user.win()
+        response = jsonify({"status": "Ok"})
+        response.status_code = 201
+        return response
+    abort(404)
+
+@app.route('/special_package', methods=['GET'])
+def get_special_package():
+    packages = Special_Packages.query.all()
+    packages_list = []
+    for i in packages:
+        packages_list.append(i.to_dict())
+    response = jsonify({"packages": packages_list})
+    response.status_code = 200
+    return response
+
 @app.route('/getHash', methods=['POST'])
 @hm.check_hmac
 def get_hash():
@@ -568,29 +619,9 @@ def set_gold_diamond(gold, diamond):
 @app.route('/shopping/<int:package>', methods=['POST'])
 @hm.check_hmac
 def shopping(package):
-
-    '''
-    username = request.json['username']
-    store = Store.query.filter_by(number=package).first()
-    temp_username = username if username != "-1" else "aghaxoo"
-    retrieved_user = User.query.filter_by(username=temp_username).first()
-    if retrieved_user:
-        retrieved_user.shopping(store.price)
-        retrieved_user.recent_access_time()
-        diamond = store.diamond
-        retrieved_user.buy_gold_diamond(diamond)
-        transaction = Transaction(retrieved_user.id, store.discount, diamond, store.price)
-        db_session.add(transaction)
-        db_session.commit()
-        response = jsonify({"status": "200"})
-        response.status_code = 200
-        return response
-    abort(404)
-    '''
     response = jsonify({"status": "200"})
     response.status_code = 200
     return response
-
 
 
 @app.route('/V1/get_rank/level/<int:user_level>/offset/<int:offset>', methods=['POST'])
@@ -603,12 +634,11 @@ def get_rank_v1(user_level, offset):
             filter(Level.level == user_level).order_by(Level.time.asc()).all()  # TODO: this function must be cached
         cache.set('V1_level_user_join_' + str(user_level), a, timeout=5 * 60)
     '''
-    #a = db_session.query(User, Level).join(Level).add_columns(User.score, Level.level, Level.time, User.username). \
+    # a = db_session.query(User, Level).join(Level).add_columns(User.score, Level.level, Level.time, User.username). \
     #            filter(Level.level == user_level).order_by(Level.time.asc()).all()
 
     a = db_session.query(User, Level).join(Level).add_columns(User.score, Level.level, Level.time, User.username). \
-            filter(Level.level == user_level).order_by(Level.time.asc()).all()  # TODO: this function must be cached
-
+        filter(Level.level == user_level).order_by(Level.time.asc()).all()  # TODO: this function must be cached
 
     if request.json.get("id").isdigit():
         id = int(request.json.get("id"))
@@ -635,9 +665,10 @@ def get_rank_v1(user_level, offset):
             usernames_list.append(a[i][5])
             time_list.append(a[i][4])
 
-        #anar = json.dumps(usernames_list, cls=SetEncoder, ensure_ascii=False)
-        response = jsonify({'status': '200', 'username': usernames_list, 'scores': time_list, 'index': index - start_index,
-                            'rank': index + 1})
+        # anar = json.dumps(usernames_list, cls=SetEncoder, ensure_ascii=False)
+        response = jsonify(
+            {'status': '200', 'username': usernames_list, 'scores': time_list, 'index': index - start_index,
+             'rank': index + 1})
         response.status_code = 200
         return response
     abort(404)
@@ -657,8 +688,7 @@ def get_rank(user_level, offset):
     '''
 
     a = db_session.query(User, Level).join(Level).add_columns(User.score, Level.level, Level.time, User.username). \
-            filter(Level.level == user_level).order_by(Level.time.asc()).all()  # TODO: this function must be cached
-
+        filter(Level.level == user_level).order_by(Level.time.asc()).all()  # TODO: this function must be cached
 
     username = request.json['username']
     current_user = db_session.query(User).filter_by(username=username).first()
@@ -702,13 +732,10 @@ def get_score(offset):
         cache.set('user_sorted_by_score', player, timeout=5 * 60)
     '''
     player = db_session.query(User).filter_by().order_by(
-            User.score.asc()).all()  ## TODO: this function must be cached
-
-
+        User.score.asc()).all()  ## TODO: this function must be cached
 
     username = request.json.get("username")
     current_user = db_session.query(User).filter_by(username=username).first()
-
 
     if current_user:
         index = 0
@@ -732,7 +759,6 @@ def get_score(offset):
             usernames_list.append(temp_username)
             scores_list.append(431880 - player[i].score)
 
-
         converted_usernames_list = json.dumps(usernames_list, cls=SetEncoder, ensure_ascii=False)
         response = jsonify({'status': '200', 'username': converted_usernames_list,
                             'scores': scores_list,
@@ -740,7 +766,6 @@ def get_score(offset):
         response.status_code = 200
         return response
     abort(404)
-
 
 
 @app.route('/V1/get_rank/score/offset/<int:offset>', methods=['POST'])
@@ -757,8 +782,7 @@ def get_score_v1(offset):
         cache.set('user_sorted_by_score', player, timeout=5 * 60)
     '''
     player = db_session.query(User).filter_by().order_by(
-            User.score.asc()).all()  ## TODO: this function must be cached
-
+        User.score.asc()).all()  ## TODO: this function must be cached
 
     if request.json.get("id").isdigit():
         id = int(request.json.get("id"))
@@ -789,8 +813,8 @@ def get_score_v1(offset):
             scores_list.append(431880 - player[i].score)
 
 
-        #converted_usernames_list = json.dumps(usernames_list)#, ensure_ascii=False)
-        response = jsonify({'status': '200', 'username': usernames_list,#converted_usernames_list,
+        # converted_usernames_list = json.dumps(usernames_list)#, ensure_ascii=False)
+        response = jsonify({'status': '200', 'username': usernames_list,  # converted_usernames_list,
                             'scores': scores_list,
                             'rank': index + 1, 'index': index - start_index})
         response.status_code = 200
@@ -798,16 +822,101 @@ def get_score_v1(offset):
     abort(404)
 
 
-
 @app.route('/bazzar', methods=['GET', 'POST'])
 def get_bazzar_token():
     return request.data
 
 
+@app.route('/v1/validate_transaction', methods=['POST'])
+@hm.check_hmac
+def v1_validate_transaction():
+    product_id = request.json["product_id"]
+    purchase_token = request.json["purchase_token"]
+    request_validate = cafebazaar_send_validation_request(product_id, purchase_token)
+    is_repeated_token = db_session.query(Transaction).filter_by(token=purchase_token).all()
+    result = request_validate and len(is_repeated_token) == 0
+    if result:
+        store_product_ids = db_session.query(Store.product_id).all()
+        special_packages_product_ids = db_session.query(Special_Packages.product_id).all()
+
+        for i in store_product_ids:
+            if product_id in i:
+                store = Store.query.filter_by(product_id=product_id).first()
+                transaction = Transaction(request.json.get("id"), store.discount, store.diamond, store.price,
+                                          purchase_token, product_id)
+                db_session.add(transaction)
+                break
+
+        for i in special_packages_product_ids:
+            if product_id in i:
+                special_packages = Special_Packages.query.filter_by(product_id=product_id).first()
+                transaction = Transaction(request.json.get("id"), special_packages.discount, special_packages.diamond,
+                                          special_packages.price, purchase_token, product_id)
+                db_session.add(transaction)
+                break
+
+        db_session.commit()
+
+    response = jsonify({"status": result})
+    response.status_code = 200
+    return response
+
+
+@app.route('/check_validatation_testing', methods=['POST'])
+@hm.check_hmac
+def testing_validation1():
+    print(request.json)
+    product_id = request.json["product_id"]
+    purchase_token = request.json["purchase_token"]
+    request_validate = cafebazaar_send_validation_request(product_id, purchase_token, 1)
+    response = jsonify({"status": request_validate})
+    response.status_code = 200
+    return response
+
+
+'''
+@app.route('/v1/validate_transaction_testing_testing', methods=['POST'])
+#@hm.check_hmac
+def validation_v1():
+
+    product_id = request.json["product_id"]
+    purchase_token = request.json["purchase_token"]
+    cafebazaar_send_validation_request(product_id, purchase_token, request.json.get("id"))
+    request_validate = True
+    is_repeated_token = db_session.query(Transaction).filter_by(token=purchase_token).all()
+    if request_validate and not is_repeated_token:
+        product_ids = db_session.query(Store.product_id).all()
+        special_packages_product_ids = db_session.query(Special_Packages.product_id).all()
+        user_db = GameDb.query.filter_by(user_id=request.json.get("id")).first()
+        for i in product_ids:
+            if product_id in i:
+                store = Store.query.filter_by(product_id=product_id).first()
+                user_db.Diamonds = store.diamond + user_db.Diamonds
+                transaction = Transaction(request.json.get("id"), store.discount, store.diamond, store.price, purchase_token, product_id)
+                db_session.add(transaction)
+                break
+        for i in special_packages_product_ids:
+            if product_id in i:
+                special_packages = Special_Packages.query.all()
+                user_db.Charecters = special_packages.charactor
+                user_db.Diamonds = special_packages.diamond + user_db.Diamonds
+                user_db.Coins = special_packages.coin + user_db.Coins
+                transaction = Transaction(request.json.get("id"), special_packages.discount, special_packages.diamond, special_packages.price, purchase_token, product_id)
+                db_session.add(transaction)
+                break
+
+        db_session.commit()
+
+    response = jsonify({"status": request_validate})
+    response.status_code = 200
+    return response
+
+'''
+
+
 @app.route('/validate_transaction', methods=['POST'])
 @hm.check_hmac
-def testing_validation():
-
+def v0_validation():
     try:
         product_id = request.json["product_id"]
         purchase_token = request.json["purchase_token"]
@@ -831,35 +940,28 @@ def testing_validation():
                 retrieved_user = None
                 if id:
                     retrieved_user = User.query.filter_by(id=id).first()
-                    print("fuck_1 {0} __ {1}".format(str(datetime.datetime.now()), str(datetime.datetime.utcnow())))
                     if not retrieved_user:
                         retrieved_user = User.query.filter_by(username="aghaxoo").first()
 
                 else:
                     retrieved_user = User.query.filter_by(username="aghaxoo").first()
-                    print("fuck_2 {0} __ {1}".format(str(datetime.datetime.now()), str(datetime.datetime.utcnow())))
-
-
 
                 if retrieved_user:
                     retrieved_user.shopping(store.price)
                     retrieved_user.recent_access_time()
                     diamond = store.diamond
                     retrieved_user.buy_gold_diamond(diamond)
-                    transaction = Transaction(retrieved_user.id, store.discount, diamond, store.price, purchase_token, product_id)
+                    transaction = Transaction(retrieved_user.id, store.discount, diamond, store.price, purchase_token,
+                                              product_id)
                     db_session.add(transaction)
                     db_session.commit()
-                    print("fuck_3 {0} __ {1}".format(str(datetime.datetime.now()), str(datetime.datetime.utcnow())))
             else:
                 retrieved_user = None
                 if id:
                     retrieved_user = User.query.filter_by(id=id).first()
-                    print("fuck_4 {0} __ {1}".format(str(datetime.datetime.now()), str(datetime.datetime.utcnow())))
 
                 else:
                     retrieved_user = User.query.filter_by(username="aghaxoo").first()
-                    print("fuck_5 {0} __ {1}".format(str(datetime.datetime.now()), str(datetime.datetime.utcnow())))
-
 
                 if retrieved_user:
                     retrieved_user.shopping(25000)
@@ -869,8 +971,6 @@ def testing_validation():
                     transaction = Transaction(retrieved_user.id, 0, diamond, 25000, purchase_token, product_id)
                     db_session.add(transaction)
                     db_session.commit()
-                    print("fuck_6 {0} __ {1}".format(str(datetime.datetime.now()), str(datetime.datetime.utcnow())))
-        print("fuck_7 {0} __ {1}".format(str(datetime.datetime.now()), str(datetime.datetime.utcnow())))
         response = jsonify({"status": request_validate})
         response.status_code = 200
         return response
@@ -878,8 +978,6 @@ def testing_validation():
     except:
         print("database insertion broken")
         abort(500)
-
-
 
 
 @app.route('/')
@@ -902,6 +1000,7 @@ def cafebazaar_refresh_auth():
     return json.loads(r.text)["access_token"]
 
 
+# @celery.task(name='req')
 def cafebazaar_send_validation_request(product_id, purchase_token):
     bazzar_access_token = cafebazaar_refresh_auth()
     url = "https://pardakht.cafebazaar.ir/devapi/v2/api/validate/" + \
@@ -909,14 +1008,40 @@ def cafebazaar_send_validation_request(product_id, purchase_token):
           str(purchase_token) + "/?access_token={access_token}" \
               .format(access_token=bazzar_access_token)
     r = requests.get(url, verify=False)
-
     return_json = json.loads(r.text)
-    print("kalanjar", return_json.has_key('error'))
-    if return_json.has_key('error'):
-        return False
-    else:
-        return True
+    result = return_json.get('error') is None
+    print(result)
+    return result
 
 
 if __name__ == '__main__':
+    app.debug = True
+    #manager.run()
     app.run(host='0.0.0.0', port=6789)
+
+'''
+print("koscher")
+is_repeated_token = db_session.query(Transaction).filter_by(token=purchase_token).all()
+if request_validate and not is_repeated_token:
+    product_ids = db_session.query(Store.product_id).all()
+    special_packages_product_ids = db_session.query(Special_Packages.product_id).all()
+    user_db = GameDb.query.filter_by(user_id=request.json.get("id")).first()
+
+    for i in product_ids:
+        if product_id in i:
+            store = Store.query.filter_by(product_id=product_id).first()
+            user_db.Diamonds = store.diamond + user_db.Diamonds
+            transaction = Transaction(request.json.get("id"), store.discount, store.diamond, store.price, purchase_token, product_id)
+            db_session.add(transaction)
+            break
+    for i in special_packages_product_ids:
+        if product_id in i:
+            special_packages = Special_Packages.query.all()
+            user_db.Charecters = special_packages.charactor
+            user_db.Diamonds = special_packages.diamond + user_db.Diamonds
+            user_db.Coins = special_packages.coin + user_db.Coins
+            transaction = Transaction(request.json.get("id"), special_packages.discount, special_packages.diamond, special_packages.price, purchase_token, product_id)
+            db_session.add(transaction)
+            break
+
+'''

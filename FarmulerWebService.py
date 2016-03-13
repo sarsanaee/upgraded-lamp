@@ -18,11 +18,27 @@ from flask.ext.hmac import Hmac
 from myadmin import UserView, GiftCardView, LevelView, \
     MyAdminIndexView, AdminUsersView, XmlBaseView, \
     TransactionView, StoreView, GameDbView, SpecialPackView
-
-app = Flask(__name__)
-app.config.from_object('config.Config')
-cache = SimpleCache()
 init_db()
+app = Flask(__name__)
+# app.config.from_object('config.Config')
+# app.DEBUG = True
+#
+# app.config.IP = '0.0.0.0'
+# app.PORT = 5000
+# app.SECRET_KEY = "\xa1xec[\tg`\xac\x96\xafv\xff\xf6\x04\xa2bT\x13\xb6\xca\xf9@\xf2"
+# app.HMAC_KEY = "hBV+H7dt2aD/R3z"
+
+app.config.update(
+    CELERY_BROKER_URL='redis://localhost:6379',
+    CELERY_RESULT_BACKEND='redis://localhost:6379',
+    HMAC_KEY = "hBV+H7dt2aD/R3z",
+    SECRET_KEY = "\xa1xec[\tg`\xac\x96\xafv\xff\xf6\x04\xa2bT\x13\xb6\xca\xf9@\xf2",
+    PORT = 6789,
+    IP = '0.0.0.0',
+    DEBUG = True
+)
+
+cache = SimpleCache()
 hm = Hmac(app)
 
 

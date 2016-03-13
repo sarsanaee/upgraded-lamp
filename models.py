@@ -37,7 +37,8 @@ class User(Base):
     __tablename__ = 'users'
 
     id = Column(Integer, primary_key=True, index=True)
-    username = Column(Unicode(80), unique=True, index=True)
+    # username = Column(Unicode(80), unique=True, index=True)
+    username = Column(Unicode(80), index=True)
     password = Column(String(40))
     email = Column(String(120))
     register_date = Column(DateTime)
@@ -49,13 +50,15 @@ class User(Base):
     diamond = Column(Integer)
     chars_bought = Column(Integer)
     experience = Column(Integer)
+    is_banned = Column(Boolean)
+    wins = Column(Integer)
 
     status = relationship('Level', backref='users',
                           lazy='dynamic')
     trans = relationship('Transaction', backref='users',
                          lazy='dynamic')
     gamedb = relationship('GameDb', backref='users',
-                         lazy='dynamic')
+                          lazy='dynamic')
 
     def __init__(self, username=None, password=None, email=None):
         self.username = username
@@ -69,6 +72,8 @@ class User(Base):
         self.shop = 0
         self.score = (59 * 60 + 59) * 120
         self.chars_bought = 0
+        self.wins = 0
+        self.is_banned = False
 
     def recent_access_time(self):
         self.last_check = datetime.now()
@@ -94,6 +99,9 @@ class User(Base):
 
     def update_score(self, previous_time, time):
         self.score = self.score - previous_time + time
+
+    def win(self):
+        self.wins += 1
 
     def __repr__(self):
         return self.username if all(ord(c) < 128 for c in self.username) else self.username[::-1]
@@ -231,6 +239,7 @@ class GameDb(Base):
     BuySpecialOffer = Column(Unicode)
     XP = Column(Unicode)
     XpLevel = Column(Unicode)
+    XpNextLevel = Column(Unicode)
     Gandoms = Column(Unicode)
     user_id = Column(Integer, ForeignKey('users.id'))
 
@@ -282,11 +291,12 @@ class GameDb(Base):
         self.Gandoms = json["Gandoms"]
         self.XP = json["XP"]
         self.XpLevel = json["XpLevel"]
+        self.XpNextLevel = json["XpNextLevel"]
         self.Charecters = json["Charecters"]
 
     def to_dict(self):
         return {
-            "IsInitilized": self.IsInitilized,#
+            "IsInitilized": self.IsInitilized,  #
             "Active_Car_Level_Capacity": self.ActiveCarLevel_Capacity,
             "Active_CaR_Level_Speed": self.ActiveCarLevelSpeed,
             "Active_Heli_Level_Capacity": self.ActiveHeliLevelCapacity,
@@ -305,7 +315,7 @@ class GameDb(Base):
             "FactoryLevel": self.FactoryLevel,
             "FarmCost": self.FarmCost,
             "GiveRate": self.GiveRate,
-            "LastDayPlayed": self.LastDayPlayed,#
+            "LastDayPlayed": self.LastDayPlayed,  #
             "LastDayCounter": self.LastDayCounter,
             "LastTempLevel": self.LastTempLevel,
             "LevelsStatus": self.LevelsStatus,
@@ -319,7 +329,7 @@ class GameDb(Base):
             "pickedUpItemDeletionTime": self.pickedUpItemDeletionTime,
             "Prize": self.Prize,
             "Share": self.Share,
-            "WorkingTime": self.WorkingTime,#
+            "WorkingTime": self.WorkingTime,  #
             "EffectState": self.EffectState,
             "Email": self.Email,
             "BuySpecialOffer": self.BuySpecialOffer,
@@ -328,15 +338,15 @@ class GameDb(Base):
             "Gandoms": self.Gandoms,
             "XP": self.XP,
             "XpLevel": self.XpLevel,
+            "XpNextLevel": self.XpNextLevel,
             "Charecters": self.Charecters
         }
 
     def __unicode__(self):
-        return self.number
+        return self.username
 
 
 class Special_Packages(Base):
-
     __tablename__ = 'specialpack'
 
     id = Column(Integer, primary_key=True)
@@ -346,22 +356,50 @@ class Special_Packages(Base):
     coin = Column(Integer)
     diamond = Column(Integer)
     discount_price = Column(Integer)
-    charactor = Column(Unicode)
+    character = Column(Boolean)
+    discount = Column(Integer)
+    gandom = Column(Integer)
 
     __mapper_args__ = \
         {
             "order_by": id
         }
 
-    def __init__(self, number=None, price=None, diamond=None, discount=None, product_id=None):
+    def __init__(self,
+                 number=None,
+                 price=None,
+                 diamond=None,
+                 discount=None,
+                 product_id=None,
+                 character=None,
+                 gandom=None,
+                 discount_price=None,
+                 coin=None):
         self.number = number
         self.product_id = product_id
         self.price = price
         self.diamond = diamond
         self.discount = discount
+        self.character = character
+        self.coin = coin
+        self.discount_price = discount_price
+        self.gandom = gandom
 
+    def to_dict(self):
+        return {
+            "number": self.number,
+            "product_id": self.product_id,
+            "price": self.price,
+            "diamond": self.diamond,
+            "discount": self.discount,
+            "character": self.character,
+            "coin": self.coin,
+            "discount_price": self.discount_price,
+            "gandom": self.gandom
+
+        }
     def __unicode__(self):
-        return self.number
+        return self.product_id
 
 
 class Store(Base):
@@ -388,6 +426,19 @@ class Store(Base):
 
     def __unicode__(self):
         return self.number
+
+
+class Api(Base):
+    __tablename__ = 'api'
+
+    id = Column(Integer, primary_key=True)
+    version = Column(Unicode)
+
+    def __init__(self, version=None):
+        self.version = version
+
+    def __unicode__(self):
+        return self.version
 
 
 '''

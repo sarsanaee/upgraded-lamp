@@ -13,6 +13,10 @@ from database import db_session
 from models import AdminUsers
 
 
+class ApiView(ModelView):
+    def is_accessible(self):
+        return login.current_user.is_authenticated()
+
 class GameDbView(ModelView):
     def is_accessible(self):
         return login.current_user.is_authenticated()
@@ -50,7 +54,7 @@ class GiftCardView(ModelView):
 
 class UserView(ModelView):
     form_base_class = flask_wtf.Form
-    column_exclude_list = ('password', 'chars')
+    column_exclude_list = ('chars')
     column_sortable_list = ('shop', 'gold', 'diamond', 'score', 'total_level')
     column_searchable_list = ['username', 'email']
     column_filters = ['gold', 'diamond', 'score', 'shop', 'total_level']
