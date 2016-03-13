@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from flask import Flask, request, abort
 from database import db_session
-from models import User, Level, Transaction, Xmlbase, Giftcards, AdminUsers, Store,\
+from models import User, Level, Transaction, Xmlbase, Giftcards, AdminUsers, Store, \
     GameDb, Special_Packages, Api
 from database import init_db, Base
 from flask import jsonify, json
@@ -19,6 +19,7 @@ from myadmin import UserView, GiftCardView, LevelView, \
 from werkzeug.contrib.cache import SimpleCache
 from flask_script import Manager
 from flask_migrate import Migrate, MigrateCommand
+
 cache = SimpleCache()
 from flask_admin.contrib.sqla import ModelView
 
@@ -118,6 +119,40 @@ def time_server():
     response.status_code = 200
     return response
 
+@app.route('/v1/get_time', methods=['GET'])
+def get_time_server():
+    time = datetime.datetime.now()
+    response = jsonify({'status': '200', 'time': time})
+    response.status_code = 200
+    return response
+
+
+@app.route('/dailyreward/<int:id>', methods=['GET'])
+def daily_reward():
+    retrieved_user = User.query.filter_by(username=request.json.get('username')).first()
+    if retrieved_user:
+        b = datetime.now()
+        delta = b - retrieved_user.last_daily_reward_date
+        if (delta.total_seconds() > 3599):
+            response = jsonify({"status": "Ok"})
+            response.status_code = 200
+            return response
+        abort(403)
+    abort(404)
+
+
+@app.route('/editprofile', methods=['POST'])
+@hm.check_hmac
+def edit_profile():
+    retrieved_user = User.query.filter_by(id=request.json.get('id')).first()
+    if retrieved_user:
+        retrieved_user.update_profile(request.json.get('email'), request.json.get('password'))
+        db_session.commit()
+        response = jsonify({'status': 'updated'})
+        response.status_code = 200
+        return response
+    abort(404)
+
 
 @app.route('/V1/getid', methods=['POST'])
 @hm.check_hmac
@@ -131,18 +166,18 @@ def get_id():
     abort(404)
 
 
-
 @app.route('/login', methods=['POST'])
 @hm.check_hmac
 def login():
-    retrieved_user = User.query.filter_by(id=request.json.get('id')).first()
+    retrieved_user = User.query.filter_by(username=request.json.get('username')).first()
     if retrieved_user and retrieved_user.password == request.json.get('password'):
-        response = jsonify({'status': 'OK'})
+        response = jsonify({'status': 'OK',
+                            'email': retrieved_user.email,
+                            'id': retrieved_user.id,
+                            'password': retrieved_user.password})
         response.status_code = 200
         return response
-    abort(403)
-
-
+    abort(401)
 
 
 @app.route('/level_creator', methods=['GET'])
@@ -159,6 +194,15 @@ def level_creator():
     return response
 
 
+@app.route('/V2/datacorrector', methods=['GET'])
+def datacorrector():
+    users = User.query.all()
+    for i in users:
+        i.is_banned = False
+        i.wins = 0
+        i.last_daily_reward_date = datetime.datetime.now()
+    db_session.commit()
+    return "finished"
 @app.route('/V2/coin/<int:id>', methods=['GET'])
 def get_gold(id):
     gamedb = GameDb.query.filter_by(user_id=id).first()
@@ -208,8 +252,7 @@ def update_experice():
 @app.route('/gamedb/<int:id>', methods=['GET'])
 def get_player_db(id):
     gamedb = GameDb.query.filter_by(user_id=id).first()
-    if (gamedb):
-        print(gamedb.to_dict())
+    if gamedb:
         response = jsonify(gamedb.to_dict())
         response.status_code = 200
         return response
@@ -438,18 +481,20 @@ def updatemylevels():
 @app.route('/getStore', methods=['POST'])
 @hm.check_hmac
 def get_store():
-    '''
+
     store = cache.get('store')
-    if store is None:
+    version = cache.get('version')
+    if store is None and version is None:
         store = db_session.query(Store).all()
+        version = Api.query.first().version
         cache.set('store', store, timeout=5 * 60)
-    '''
+        cache.set('version', version, timeout=5 * 60)
     store = db_session.query(Store).all()
     message = ''
     for i in store:
         message += str(i.number) + ':' + str(i.price) + ":" + str(i.diamond) + ":" + str(i.discount) + '\n'
     message = message[:len(message) - 1]
-    response = jsonify({"status": "200", 'store': message})
+    response = jsonify({"status": "200", 'store': message, 'version': version})
     response.status_code = 200
     return response
 
@@ -490,6 +535,7 @@ def valid_giftcard():
     gift_ret = Giftcards.query.filter_by(code=gift_code).first()
     if gift_ret and gift_ret.validity:
         gift_ret.count -= 1
+        gift_ret.username = request.json['username']
         if gift_ret.count == 0:
             gift_ret.validity = 0
         db_session.commit()
@@ -537,9 +583,9 @@ def set_char_bought():
     abort(404)
 
 
-@app.route('/wins/<int:id_nums>', methods=['GET'])
-def wins_number(id_nums):
-    retrieved_user = User.query.filter_by(id=id_nums).first()
+@app.route('/wins/<username>', methods=['GET'])
+def wins_number(username):
+    retrieved_user = User.query.filter_by(username=str(username)).first()
     if retrieved_user:
         response = jsonify({"status": "OK", "wins": retrieved_user.wins})
         response.status_code = 200
@@ -557,6 +603,7 @@ def win_game():
         return response
     abort(404)
 
+
 @app.route('/special_package', methods=['GET'])
 def get_special_package():
     packages = Special_Packages.query.all()
@@ -566,6 +613,7 @@ def get_special_package():
     response = jsonify({"packages": packages_list})
     response.status_code = 200
     return response
+
 
 @app.route('/getHash', methods=['POST'])
 @hm.check_hmac
@@ -865,7 +913,6 @@ def v1_validate_transaction():
 @app.route('/check_validatation_testing', methods=['POST'])
 @hm.check_hmac
 def testing_validation1():
-    print(request.json)
     product_id = request.json["product_id"]
     purchase_token = request.json["purchase_token"]
     request_validate = cafebazaar_send_validation_request(product_id, purchase_token, 1)
@@ -925,15 +972,12 @@ def v0_validation():
         if request.json.get("id"):
             if request.json.get("id").isdigit():
                 id = int(request.json.get("id"))
-                print(id)
-
         request_validate = -1
         for i in range(3):
             request_validate = cafebazaar_send_validation_request(product_id, purchase_token)
             if request_validate != -1:
                 break
 
-        print(product_id, purchase_token, request_validate)
         if request_validate:
             if packages.has_key(product_id):
                 store = Store.query.filter_by(number=packages[product_id]).first()
@@ -1010,13 +1054,12 @@ def cafebazaar_send_validation_request(product_id, purchase_token):
     r = requests.get(url, verify=False)
     return_json = json.loads(r.text)
     result = return_json.get('error') is None
-    print(result)
     return result
 
 
 if __name__ == '__main__':
     app.debug = True
-    #manager.run()
+    # manager.run()
     app.run(host='0.0.0.0', port=6789)
 
 '''

@@ -49,9 +49,10 @@ class User(Base):
     gold = Column(Integer)
     diamond = Column(Integer)
     chars_bought = Column(Integer)
-    experience = Column(Integer)
+    #experience = Column(Integer)
     is_banned = Column(Boolean)
     wins = Column(Integer)
+    last_daily_reward_date = Column(DateTime, default=datetime.now())
 
     status = relationship('Level', backref='users',
                           lazy='dynamic')
@@ -74,6 +75,7 @@ class User(Base):
         self.chars_bought = 0
         self.wins = 0
         self.is_banned = False
+        self.last_daily_reward_date = datetime.now()
 
     def recent_access_time(self):
         self.last_check = datetime.now()
@@ -101,7 +103,14 @@ class User(Base):
         self.score = self.score - previous_time + time
 
     def win(self):
-        self.wins += 1
+        if self.wins is not None:
+            self.wins += 1
+        else:
+            self.wins = 1
+
+    def update_profile(self, email, password):
+        self.email = email
+        self.password = password
 
     def __repr__(self):
         return self.username if all(ord(c) < 128 for c in self.username) else self.username[::-1]
@@ -166,6 +175,7 @@ class Giftcards(Base):
     count = Column(Integer)
     validity = Column(Integer)
     diamond_count = Column(Integer)
+    username = Column(Unicode)
 
     # def __init__(self, code, count):
     def __init__(self, code=None, count=None, diamond_count=None):

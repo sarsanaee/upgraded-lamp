@@ -38,6 +38,8 @@ class XmlBaseView(ModelView):
 
 class TransactionView(ModelView):
     column_searchable_list = ['token']
+    page_size = 100
+
 
     def is_accessible(self):
         return login.current_user.is_authenticated()
@@ -54,13 +56,41 @@ class GiftCardView(ModelView):
 
 class UserView(ModelView):
     form_base_class = flask_wtf.Form
-    column_exclude_list = ('chars')
-    column_sortable_list = ('shop', 'gold', 'diamond', 'score', 'total_level')
-    column_searchable_list = ['username', 'email']
-    column_filters = ['gold', 'diamond', 'score', 'shop', 'total_level']
+    form_columns = ('username',
+                    'email',
+                    'password',
+                    'register_date',
+                    'last_check',
+                    'total_level',
+                    'shop',
+                    'score',
+                    'gold',
+                    'diamond',
+                    'chars_bought',
+                    'is_banned',
+                    'wins',
+                    'last_daily_reward_date')
+
+    column_exclude_list = ('chars',
+                           'status',
+                           'trans')
+    column_sortable_list = ('shop',
+                            'gold',
+                            'diamond',
+                            'score',
+                            'total_level',
+                            'id',
+                            'username')
+    column_searchable_list = ['username',
+                              'email']
+    column_filters = ['gold',
+                      'diamond',
+                      'score',
+                      'shop',
+                      'total_level']
     page_size = 100
     column_display_pk = True
-    can_export = True
+    can_export = False
     can_edit = True
 
     column_formatters = dict(username=lambda v, c, m, p: m.username if all(ord(c) < 128 for c in m.username) else m.username[::-1])
