@@ -251,6 +251,7 @@ class GameDb(Base):
     XpLevel = Column(Unicode)
     XpNextLevel = Column(Unicode)
     Gandoms = Column(Unicode)
+    DatabaseRestored = Column(Integer)
     user_id = Column(Integer, ForeignKey('users.id'))
 
     __mapper_args__ = \
@@ -278,7 +279,7 @@ class GameDb(Base):
         self.FarmCost = json['FarmCost']
         self.GiveRate = json['GiveRate']
         self.LastDayPlayed = json['LastDayPlayed']
-        self.LastDayCounter = json["LastDayCounter"]
+        self.LastDayCounter = json['LastDayCounter']
         self.LastTempLevel = json['LastTempLevel']
         self.LevelsStatus = json['LevelsStatus']
         self.LevelTimeStatus = json['LevelTimeStatue']
@@ -303,10 +304,14 @@ class GameDb(Base):
         self.XpLevel = json["XpLevel"]
         self.XpNextLevel = json["XpNextLevel"]
         self.Charecters = json["Charecters"]
+        self.DatabaseRestored = json["DatabaseRestored"]
+
+    def update_data(self, json):
+        self.__init__(json)
 
     def to_dict(self):
         return {
-            "IsInitilized": self.IsInitilized,  #
+            "IsInitilized": self.IsInitilized,
             "Active_Car_Level_Capacity": self.ActiveCarLevel_Capacity,
             "Active_CaR_Level_Speed": self.ActiveCarLevelSpeed,
             "Active_Heli_Level_Capacity": self.ActiveHeliLevelCapacity,
@@ -325,7 +330,7 @@ class GameDb(Base):
             "FactoryLevel": self.FactoryLevel,
             "FarmCost": self.FarmCost,
             "GiveRate": self.GiveRate,
-            "LastDayPlayed": self.LastDayPlayed,  #
+            "LastDayPlayed": self.LastDayPlayed,
             "LastDayCounter": self.LastDayCounter,
             "LastTempLevel": self.LastTempLevel,
             "LevelsStatus": self.LevelsStatus,
@@ -349,7 +354,8 @@ class GameDb(Base):
             "XP": self.XP,
             "XpLevel": self.XpLevel,
             "XpNextLevel": self.XpNextLevel,
-            "Charecters": self.Charecters
+            "MusicState": self.MusicState,
+            "DatabaseRestored": self.DatabaseRestored
         }
 
     def __unicode__(self):
