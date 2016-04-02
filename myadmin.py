@@ -18,6 +18,8 @@ class ApiView(ModelView):
         return login.current_user.is_authenticated()
 
 class GameDbView(ModelView):
+    column_display_pk = True
+
     def is_accessible(self):
         return login.current_user.is_authenticated()
 

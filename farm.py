@@ -14,6 +14,7 @@ from flask.ext import login
 from myadmin import UserView, GiftCardView, LevelView, \
     MyAdminIndexView, AdminUsersView, XmlBaseView, \
     TransactionView, StoreView, GameDbView, SpecialPackView, ApiView
+from jsonScheme import gameDbJsonScheme
 from werkzeug.contrib.cache import SimpleCache
 from flask_script import Manager
 from flask_migrate import Migrate, MigrateCommand
@@ -72,6 +73,7 @@ celery = make_celery(app)
 packages = {"Diamonds_G": 7, "Diamonds_F": 6, "Diamonds_E": 5, "Diamonds_D": 4, "Diamonds_C": 3, "Diamonds_B": 2,
             "Diamonds_A": 1}
 
+gameDbSchemeConverter = gameDbJsonScheme()
 
 class SetEncoder(json.JSONEncoder):
     def default(self, obj):
@@ -247,9 +249,9 @@ def get_player_db(id):
     abort(404)
 
 
-@app.route('/gamedb', methods=['POST'])
+@app.route('/allgamedb', methods=['POST'])
 @hm.check_hmac
-def set_player_db():
+def set_player_all_db():
     '''
     try:
         gamedb = GameDb(request.json)
@@ -277,6 +279,17 @@ def set_player_db():
         response.status_code = 201
     return response
 
+
+@app.route('/gamedb', methods=['POST'])
+@hm.check_hmac
+def set_player_db():
+    gamedb = GameDb.query.filter_by(user_id=request.json["id"]).first()
+    print(gamedb, request.json["id"])
+    for i in request.json.keys():
+         setattr(gamedb, gameDbSchemeConverter.get_correspond(i), request.json[i])
+    db_session.commit()
+    response = jsonify({"status": "updated"})
+    return response
 
 
 @app.route('/register', methods=['POST'])
@@ -882,6 +895,7 @@ def get_bazzar_token():
 @app.route('/v1/validate_transaction', methods=['POST'])
 @hm.check_hmac
 def v1_validate_transaction():
+    #abort(500)
     product_id = request.json["product_id"]
     purchase_token = request.json["purchase_token"]
     request_validate = cafebazaar_send_validation_request(product_id, purchase_token)
@@ -1005,7 +1019,7 @@ def cafebazaar_refresh_auth():
         'client_id': "YBOUKMX8lkn15zJUSRMDLECpMlO0nJjhuH8keG3Q",
         'client_secret': "JXd7jpqluUCqfpMX9ZxyrKTT2htA5NqAtdACyXgSW91p8eJXDbauZoDonyk2",
         'refresh_token': "8KkfCgsd0BqS7TqG4PNaDT3eQ6gKQR"
-    })
+    }, verify=False)
     return json.loads(r.text)["access_token"]
 
 
