@@ -552,7 +552,7 @@ def valid_giftcard():
     gift_ret = Giftcards.query.filter_by(code=gift_code).first()
     if gift_ret and gift_ret.validity:
         gift_ret.count -= 1
-        gift_ret.username = "test"#request.json['username']
+        gift_ret.username = request.json['username']
         if gift_ret.count == 0:
             gift_ret.validity = 0
         db_session.commit()
