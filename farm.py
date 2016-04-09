@@ -284,7 +284,6 @@ def set_player_all_db():
 @hm.check_hmac
 def set_player_db():
     gamedb = GameDb.query.filter_by(user_id=request.json["id"]).first()
-    print(gamedb, request.json["id"])
     for i in request.json.keys():
          setattr(gamedb, gameDbSchemeConverter.get_correspond(i), request.json[i])
     db_session.commit()
