@@ -306,7 +306,7 @@ class GameDb(Base):
             self.Charecters = json["Charecters"]
             self.DatabaseRestored = json["DatabaseRestored"]
         else:
-            user_id = user_id
+            self.user_id = user_id
     def update_data(self, json):
         self.__init__(json)
 
