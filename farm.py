@@ -317,9 +317,10 @@ def register():
     u = User(request.json['username'], request.json['password'], request.json['email'])
 
     #generating proper game db for new user
-    new_gamedb = GameDb(None, u.id) # creating new game db for new user
     db_session.add(u)
     db_session.commit()
+
+    new_gamedb = GameDb(None, u.id) # creating new game db for new user
 
     db_session.add(new_gamedb)
     db_session.commit()
