@@ -317,11 +317,7 @@ def register():
     u = User(request.json['username'], request.json['password'], request.json['email'])
 
     #generating proper game db for new user
-    gamedb = GameDb.query.filter_by(user_id=15).first() #cloning default db
-    new_gamedb = GameDb() # creating new game db for new user
-    new_gamedb = gamedb # setting values
-    new_gamedb.user_id = u.id # setting created user id for its db
-
+    new_gamedb = GameDb(None, u.id) # creating new game db for new user
     db_session.add(new_gamedb)
 
     db_session.add(u)

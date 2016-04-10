@@ -207,50 +207,50 @@ class GameDb(Base):
     __tablename__ = 'gamedb'
 
     id = Column(Integer, primary_key=True)
-    IsInitilized = Column(Integer)
-    ActiveCarLevel_Capacity = Column(Unicode)
-    ActiveCarLevelSpeed = Column(Unicode)
-    ActiveHeliLevelCapacity = Column(Unicode)
-    ActiveHeliLevelSpeed = Column(Unicode)
-    ActiveBuilderLevel = Column(Unicode)
-    ActiveCar = Column(Unicode)
-    ActiveCharecter = Column(Unicode)
-    ActiveHeli = Column(String)
-    ActivePlantsLevel = Column(Unicode)
-    ActiveProductionLevel = Column(Unicode)
-    ActiveRepositoryLevel = Column(Unicode)
-    Charecters = Column(Unicode)
-    Coins = Column(Unicode)
-    CurrentLevel = Column(Unicode)
-    Diamonds = Column(Unicode)
-    FactoryLevel = Column(Unicode)
-    FarmCost = Column(Unicode)
-    GiveRate = Column(Unicode)
-    LastDayCounter = Column(Unicode)
-    LastDayPlayed = Column(Unicode)
-    LastTempLevel = Column(Integer)
-    LevelsStatus = Column(Unicode)
-    LevelTimeStatus = Column(Unicode)
-    LevelTutorial1 = Column(Integer)
-    LevelTutorial2 = Column(Integer)
-    LevelTutorial3 = Column(Integer)
-    MainMenuTutorial = Column(Integer)
-    MapTutorial_1 = Column(Integer)
-    MapTutorial_2 = Column(Integer)
-    MusicState = Column(Integer)
-    pickedUpItemDeletionTime = Column(Unicode)
-    Prize = Column(Unicode)
-    Share = Column(Unicode)
-    WorkingTime = Column(Integer)
-    EffectState = Column(Integer)
-    username = Column(Unicode(80))
-    Email = Column(Unicode)
-    BuySpecialOffer = Column(Unicode)
-    XP = Column(Unicode)
-    XpLevel = Column(Unicode)
-    XpNextLevel = Column(Unicode)
-    Gandoms = Column(Unicode)
-    DatabaseRestored = Column(Integer)
+    IsInitilized = Column(Integer, nullable=True)
+    ActiveCarLevel_Capacity = Column(Unicode, nullable=True)
+    ActiveCarLevelSpeed = Column(Unicode, nullable=True)
+    ActiveHeliLevelCapacity = Column(Unicode, nullable=True)
+    ActiveHeliLevelSpeed = Column(Unicode, nullable=True)
+    ActiveBuilderLevel = Column(Unicode, nullable=True)
+    ActiveCar = Column(Unicode, nullable=True)
+    ActiveCharecter = Column(Unicode, nullable=True)
+    ActiveHeli = Column(String, nullable=True)
+    ActivePlantsLevel = Column(Unicode, nullable=True)
+    ActiveProductionLevel = Column(Unicode, nullable=True)
+    ActiveRepositoryLevel = Column(Unicode, nullable=True)
+    Charecters = Column(Unicode, nullable=True)
+    Coins = Column(Unicode, nullable=True)
+    CurrentLevel = Column(Unicode, nullable=True)
+    Diamonds = Column(Unicode, nullable=True)
+    FactoryLevel = Column(Unicode, nullable=True)
+    FarmCost = Column(Unicode, nullable=True)
+    GiveRate = Column(Unicode, nullable=True)
+    LastDayCounter = Column(Unicode, nullable=True)
+    LastDayPlayed = Column(Unicode, nullable=True)
+    LastTempLevel = Column(Integer, nullable=True)
+    LevelsStatus = Column(Unicode, nullable=True)
+    LevelTimeStatus = Column(Unicode, nullable=True)
+    LevelTutorial1 = Column(Integer, nullable=True)
+    LevelTutorial2 = Column(Integer, nullable=True)
+    LevelTutorial3 = Column(Integer, nullable=True)
+    MainMenuTutorial = Column(Integer, nullable=True)
+    MapTutorial_1 = Column(Integer, nullable=True)
+    MapTutorial_2 = Column(Integer, nullable=True)
+    MusicState = Column(Integer, nullable=True)
+    pickedUpItemDeletionTime = Column(Unicode, nullable=True)
+    Prize = Column(Unicode, nullable=True)
+    Share = Column(Unicode, nullable=True)
+    WorkingTime = Column(Integer, nullable=True)
+    EffectState = Column(Integer, nullable=True)
+    username = Column(Unicode(80), nullable=True)
+    Email = Column(Unicode, nullable=True)
+    BuySpecialOffer = Column(Unicode, nullable=True)
+    XP = Column(Unicode, nullable=True)
+    XpLevel = Column(Unicode, nullable=True)
+    XpNextLevel = Column(Unicode, nullable=True)
+    Gandoms = Column(Unicode, nullable=True)
+    DatabaseRestored = Column(Integer, nullable=True)
     user_id = Column(Integer, ForeignKey('users.id'))
 
     __mapper_args__ = \
@@ -258,7 +258,7 @@ class GameDb(Base):
             "order_by": id
         }
 
-    def __init__(self, json=None):
+    def __init__(self, json=None, user_id=None):
         if json:
             self.IsInitilized = json["IsInitilized"]
             self.ActiveCarLevel_Capacity = json['Active_Car_Level_Capacity']
@@ -305,7 +305,8 @@ class GameDb(Base):
             self.XpNextLevel = json["XpNextLevel"]
             self.Charecters = json["Charecters"]
             self.DatabaseRestored = json["DatabaseRestored"]
-
+        else:
+            user_id = user_id
     def update_data(self, json):
         self.__init__(json)
 
