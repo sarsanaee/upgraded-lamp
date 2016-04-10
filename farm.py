@@ -318,10 +318,13 @@ def register():
 
     #generating proper game db for new user
     new_gamedb = GameDb(None, u.id) # creating new game db for new user
-    db_session.add(new_gamedb)
-
     db_session.add(u)
     db_session.commit()
+
+    db_session.add(new_gamedb)
+    db_session.commit()
+
+
     response = jsonify({'status': 201, 'id': u.id})
     response.status_code = 201
     return response
