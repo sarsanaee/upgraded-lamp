@@ -315,6 +315,15 @@ def register():
         return response
         # abort(409)
     u = User(request.json['username'], request.json['password'], request.json['email'])
+
+    #generating proper game db for new user
+    gamedb = GameDb.query.filter_by(user_id=15).first() #cloning default db
+    new_gamedb = GameDb() # creating new game db for new user
+    new_gamedb = gamedb # setting values
+    new_gamedb.user_id = u.id # setting created user id for its db
+
+    db_session.add(new_gamedb)
+
     db_session.add(u)
     db_session.commit()
     response = jsonify({'status': 201, 'id': u.id})
