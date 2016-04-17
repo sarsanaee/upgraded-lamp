@@ -79,6 +79,7 @@ class User(Base):
         self.is_banned = False
         self.last_daily_reward_date = datetime.now()
 
+
     def recent_access_time(self):
         self.last_check = datetime.now()
 

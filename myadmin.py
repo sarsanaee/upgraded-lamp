@@ -71,7 +71,9 @@ class UserView(ModelView):
                     'chars_bought',
                     'is_banned',
                     'wins',
-                    'last_daily_reward_date')
+                    'last_daily_reward_date',
+                    'daily_reward_with_price_count',
+                    'daily_reward_with_price_date')
 
     column_exclude_list = ('chars',
                            'status',

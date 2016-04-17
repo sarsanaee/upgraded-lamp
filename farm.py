@@ -138,13 +138,13 @@ def daily_reward_price(id):
     retrieved_user = User.query.filter_by(id=id).first()
     if retrieved_user:
         b = datetime.datetime.now()
-        delta = b - retrieved_user.daily_reward_with_price_count_date
+        delta = b - retrieved_user.daily_reward_with_price_date
 
         if retrieved_user.daily_reward_with_price_count <= 5:
             retrieved_user.daily_reward_with_price_date = datetime.datetime.now()
             retrieved_user.daily_reward_with_price_count = retrieved_user.daily_reward_with_price_count + 1
             db_session.commit()
-            response = jsonify({"status": "Ok"})
+            response = jsonify({"status": "Ok", "count": retrieved_user.daily_reward_with_price_count})
             response.status_code = 200
             return response
 
@@ -152,7 +152,7 @@ def daily_reward_price(id):
             retrieved_user.daily_reward_with_price_date = datetime.datetime.now()
             retrieved_user.daily_reward_with_price_count = 1
             db_session.commit()
-            response = jsonify({"status": "Ok"})
+            response = jsonify({"status": "Ok", "count": retrieved_user.daily_reward_with_price_count})
             response.status_code = 200
             return response
 
