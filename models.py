@@ -52,6 +52,9 @@ class User(Base):
     is_banned = Column(Boolean)
     wins = Column(Integer)
     last_daily_reward_date = Column(DateTime, default=datetime.now())
+    daily_reward_with_price_count = Column(Integer, default=0)
+    daily_reward_with_price_date = Column(DateTime, default=datetime.now())
+
 
     status = relationship('Level', backref='users',
                           lazy='dynamic')

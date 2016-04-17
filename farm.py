@@ -123,13 +123,52 @@ def daily_reward(id):
     if retrieved_user:
         b = datetime.datetime.now()
         delta = b - retrieved_user.last_daily_reward_date
-        if (delta.total_seconds() > 10):#3599):
+        if (delta.total_seconds() > 7199):
             retrieved_user.last_daily_reward_date = datetime.datetime.now()
             db_session.commit()
             response = jsonify({"status": "Ok"})
             response.status_code = 200
             return response
         abort(403)
+    abort(404)
+
+
+@app.route('/dailyreward/price/<int:id>', methods=['GET'])
+def daily_reward_price(id):
+    retrieved_user = User.query.filter_by(id=id).first()
+    if retrieved_user:
+        b = datetime.datetime.now()
+        delta = b - retrieved_user.daily_reward_with_price_count_date
+
+        if retrieved_user.daily_reward_with_price_count <= 5:
+            retrieved_user.daily_reward_with_price_date = datetime.datetime.now()
+            retrieved_user.daily_reward_with_price_count = retrieved_user.daily_reward_with_price_count + 1
+            db_session.commit()
+            response = jsonify({"status": "Ok"})
+            response.status_code = 200
+            return response
+
+        elif delta.total_seconds() > 86399:
+            retrieved_user.daily_reward_with_price_date = datetime.datetime.now()
+            retrieved_user.daily_reward_with_price_count = 1
+            db_session.commit()
+            response = jsonify({"status": "Ok"})
+            response.status_code = 200
+            return response
+
+        abort(403)
+    abort(404)
+
+
+@app.route('/dailyreward/price/count/<int:id>', methods=['GET'])
+def daily_reward_price_count(id):
+    retrieved_user = User.query.filter_by(id=id).first()
+
+    if retrieved_user:
+        response = jsonify({"status": "Ok", "count": retrieved_user.daily_reward_with_price_count})
+        response.status_code = 200
+        return response
+
     abort(404)
 
 
@@ -193,6 +232,8 @@ def datacorrector():
         i.is_banned = False
         i.wins = 0
         i.last_daily_reward_date = datetime.datetime.now()
+        i.daily_reward_with_price_count = 0
+        i.daily_reward_with_price_date = datetime.datetime.now()
     db_session.commit()
     return "finished"
 
