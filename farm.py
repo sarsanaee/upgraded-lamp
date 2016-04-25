@@ -362,7 +362,8 @@ def register():
     db_session.commit()
 
     new_gamedb = GameDb(None, u.id) # creating new game db for new user
-
+    new_gamedb.username = u.username
+    new_gamedb.Email = u.email
     db_session.add(new_gamedb)
     db_session.commit()
 

@@ -55,7 +55,6 @@ class User(Base):
     daily_reward_with_price_count = Column(Integer, default=0)
     daily_reward_with_price_date = Column(DateTime, default=datetime.now())
 
-
     status = relationship('Level', backref='users',
                           lazy='dynamic')
     trans = relationship('Transaction', backref='users',
@@ -78,7 +77,6 @@ class User(Base):
         self.wins = 0
         self.is_banned = False
         self.last_daily_reward_date = datetime.now()
-
 
     def recent_access_time(self):
         self.last_check = datetime.now()
@@ -211,50 +209,54 @@ class GameDb(Base):
     __tablename__ = 'gamedb'
 
     id = Column(Integer, primary_key=True)
-    IsInitilized = Column(Integer, nullable=True)
-    ActiveCarLevel_Capacity = Column(Unicode, nullable=True)
-    ActiveCarLevelSpeed = Column(Unicode, nullable=True)
-    ActiveHeliLevelCapacity = Column(Unicode, nullable=True)
-    ActiveHeliLevelSpeed = Column(Unicode, nullable=True)
-    ActiveBuilderLevel = Column(Unicode, nullable=True)
-    ActiveCar = Column(Unicode, nullable=True)
-    ActiveCharecter = Column(Unicode, nullable=True)
-    ActiveHeli = Column(String, nullable=True)
-    ActivePlantsLevel = Column(Unicode, nullable=True)
-    ActiveProductionLevel = Column(Unicode, nullable=True)
-    ActiveRepositoryLevel = Column(Unicode, nullable=True)
-    Charecters = Column(Unicode, nullable=True)
-    Coins = Column(Unicode, nullable=True)
-    CurrentLevel = Column(Unicode, nullable=True)
-    Diamonds = Column(Unicode, nullable=True)
-    FactoryLevel = Column(Unicode, nullable=True)
-    FarmCost = Column(Unicode, nullable=True)
-    GiveRate = Column(Unicode, nullable=True)
-    LastDayCounter = Column(Unicode, nullable=True)
-    LastDayPlayed = Column(Unicode, nullable=True)
-    LastTempLevel = Column(Integer, nullable=True)
-    LevelsStatus = Column(Unicode, nullable=True)
-    LevelTimeStatus = Column(Unicode, nullable=True)
-    LevelTutorial1 = Column(Integer, nullable=True)
-    LevelTutorial2 = Column(Integer, nullable=True)
-    LevelTutorial3 = Column(Integer, nullable=True)
-    MainMenuTutorial = Column(Integer, nullable=True)
-    MapTutorial_1 = Column(Integer, nullable=True)
-    MapTutorial_2 = Column(Integer, nullable=True)
-    MusicState = Column(Integer, nullable=True)
-    pickedUpItemDeletionTime = Column(Unicode, nullable=True)
-    Prize = Column(Unicode, nullable=True)
-    Share = Column(Unicode, nullable=True)
-    WorkingTime = Column(Integer, nullable=True)
-    EffectState = Column(Integer, nullable=True)
+    IsInitilized = Column(Integer, default=0, nullable=True)
+    ActiveCarLevel_Capacity = Column(Unicode, default=u'1', nullable=True)
+    ActiveCarLevelSpeed = Column(Unicode, default=u'1', nullable=True)
+    ActiveHeliLevelCapacity = Column(Unicode, default=u'1', nullable=True)
+    ActiveHeliLevelSpeed = Column(Unicode, default=u'1', nullable=True)
+    ActiveBuilderLevel = Column(Unicode, default=u'1', nullable=True)
+    ActiveCar = Column(Unicode, default=u'1', nullable=True)
+    ActiveCharecter = Column(Unicode, default=u'0', nullable=True)
+    ActiveHeli = Column(String, default=u'1', nullable=True)
+    ActivePlantsLevel = Column(Unicode, default=u'1', nullable=True)
+    ActiveProductionLevel = Column(Unicode, default=u'1', nullable=True)
+    ActiveRepositoryLevel = Column(Unicode, default=u'1', nullable=True)
+    Charecters = Column(Unicode, default=u'1,0,0,0,0,0,0,0,0,0,0,0,0,0,0', nullable=True)
+    Coins = Column(Unicode, default=u'200', nullable=True)
+    CurrentLevel = Column(Unicode, default=u'0', nullable=True)
+    Diamonds = Column(Unicode, default=u'5', nullable=True)
+    FactoryLevel = Column(Unicode,
+                          default=u'T,F,F,T,T,F,T,F,F,T,F,F,T,F,F,T,F,F,T,F,F,T,F,F,T,F,F,T,F,F,T,F,F,T,F,F,T,F,F,T,F,F,T,F,F,T,F,F,T,F,F,T,F,F,T,F,F,T,F,F,T,F,F,T,F,F,T,F,F,'
+                          , nullable=True)
+    FarmCost = Column(Unicode, default=u'20', nullable=True)
+    GiveRate = Column(Unicode, default=u'0', nullable=True)
+    LastDayCounter = Column(Unicode, default=u'1', nullable=True)
+    LastDayPlayed = Column(Unicode, default=u'-1', nullable=True)
+    LastTempLevel = Column(Integer, default=0, nullable=True)
+    LevelsStatus = Column(Unicode,
+                          default=u'0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,',
+                          nullable=True)
+    LevelTimeStatus = Column(Unicode, default=u'3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,', nullable=True)
+    LevelTutorial1 = Column(Integer, default=0, nullable=True)
+    LevelTutorial2 = Column(Integer, default=0, nullable=True)
+    LevelTutorial3 = Column(Integer, default=0, nullable=True)
+    MainMenuTutorial = Column(Integer, default=0, nullable=True)
+    MapTutorial_1 = Column(Integer, default=0, nullable=True)
+    MapTutorial_2 = Column(Integer, default=0, nullable=True)
+    MusicState = Column(Integer, default=1, nullable=True)
+    pickedUpItemDeletionTime = Column(Unicode, default=u'10', nullable=True)
+    Prize = Column(Unicode, default=u'1', nullable=True)
+    Share = Column(Unicode, default=u'0', nullable=True)
+    WorkingTime = Column(Integer, default=u'0', nullable=True)
+    EffectState = Column(Integer, default=u'1', nullable=True)
     username = Column(Unicode(80), nullable=True)
     Email = Column(Unicode, nullable=True)
-    BuySpecialOffer = Column(Unicode, nullable=True)
-    XP = Column(Unicode, nullable=True)
-    XpLevel = Column(Unicode, nullable=True)
-    XpNextLevel = Column(Unicode, nullable=True)
-    Gandoms = Column(Unicode, nullable=True)
-    DatabaseRestored = Column(Integer, nullable=True)
+    BuySpecialOffer = Column(Unicode, default=u'0', nullable=True)
+    XP = Column(Unicode, default=u'0', nullable=True)
+    XpLevel = Column(Unicode, default=u'0', nullable=True)
+    XpNextLevel = Column(Unicode, default=u'300', nullable=True)
+    Gandoms = Column(Unicode, default=u'200', nullable=True)
+    DatabaseRestored = Column(Integer, default=0, nullable=True)
     user_id = Column(Integer, ForeignKey('users.id'))
 
     __mapper_args__ = \
@@ -311,6 +313,7 @@ class GameDb(Base):
             self.DatabaseRestored = json["DatabaseRestored"]
         else:
             self.user_id = user_id
+
     def update_data(self, json):
         self.__init__(json)
 
@@ -419,6 +422,7 @@ class Special_Packages(Base):
             "gandom": self.gandom
 
         }
+
     def __unicode__(self):
         return self.product_id
 
