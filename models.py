@@ -2,7 +2,7 @@ __author__ = 'alireza'
 
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Unicode, Boolean, Text, NVARCHAR
 from database import Base
-from datetime import datetime
+from datetime import datetime, timedelta
 from sqlalchemy.orm import relationship
 
 
@@ -51,7 +51,7 @@ class User(Base):
     chars_bought = Column(Integer)
     is_banned = Column(Boolean)
     wins = Column(Integer)
-    last_daily_reward_date = Column(DateTime, default=datetime.now())
+    last_daily_reward_date = Column(DateTime)
     daily_reward_with_price_count = Column(Integer, default=0)
     daily_reward_with_price_date = Column(DateTime, default=datetime.now())
 
@@ -76,7 +76,7 @@ class User(Base):
         self.chars_bought = 0
         self.wins = 0
         self.is_banned = False
-        self.last_daily_reward_date = datetime.now()
+        self.last_daily_reward_date = datetime.now() - timedelta(hours=4)
 
     def recent_access_time(self):
         self.last_check = datetime.now()
@@ -236,7 +236,9 @@ class GameDb(Base):
     LevelsStatus = Column(Unicode,
                           default=u'0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,',
                           nullable=True)
-    LevelTimeStatus = Column(Unicode, default=u'3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,', nullable=True)
+    LevelTimeStatus = Column(Unicode,
+                             default=u'3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,',
+                             nullable=True)
     LevelTutorial1 = Column(Integer, default=0, nullable=True)
     LevelTutorial2 = Column(Integer, default=0, nullable=True)
     LevelTutorial3 = Column(Integer, default=0, nullable=True)
