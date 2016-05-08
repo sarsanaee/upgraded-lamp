@@ -665,6 +665,7 @@ def win_game():
     retrieved_user = User.query.filter_by(username=request.json["winner"]).first()
     if retrieved_user:
         retrieved_user.win()
+        db_session.commit()
         response = jsonify({"status": "Ok"})
         response.status_code = 201
         return response
