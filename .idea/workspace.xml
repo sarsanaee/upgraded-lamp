@@ -6,7 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="97ab37f6-dfd9-431b-8ee4-dcedc344b687" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/farm.py" afterPath="$PROJECT_DIR$/farm.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/models.py" afterPath="$PROJECT_DIR$/models.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="upgraded-lamp.iws" />
@@ -21,7 +20,7 @@
   </component>
   <component name="ChangesViewManager" flattened_view="true" show_ignored="false" />
   <component name="CoverageDataManager">
-    <SUITE FILE_PATH="coverage/upgraded-lamp$upgraded_lamp.coverage" NAME="upgraded-lamp Coverage Results" MODIFIED="1461588679127" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/upgraded-lamp$upgraded_lamp.coverage" NAME="upgraded-lamp Coverage Results" MODIFIED="1461595054541" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
   <component name="CreatePatchCommitExecutor">
     <option name="PATCH_PATH" value="" />
@@ -41,8 +40,8 @@
       <file leaf-file-name="farm.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/farm.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.7110694">
-              <caret line="124" column="0" selection-start-line="124" selection-start-column="0" selection-end-line="124" selection-end-column="0" />
+            <state vertical-scroll-proportion="0.38600725">
+              <caret line="264" column="39" selection-start-line="264" selection-start-column="39" selection-end-line="264" selection-end-column="39" />
               <folding>
                 <element signature="e#24#63#0" expanded="true" />
                 <element signature="e#1246#1465#0" expanded="false" />
@@ -50,8 +49,7 @@
                 <element signature="e#5736#6078#0" expanded="false" />
                 <element signature="e#6156#6465#0" expanded="false" />
                 <element signature="e#7076#7372#0" expanded="false" />
-                <element signature="e#8451#8582#0" expanded="false" />
-                <element signature="e#8671#8862#0" expanded="false" />
+                <element signature="e#8694#8885#0" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -60,7 +58,7 @@
       <file leaf-file-name="models.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/models.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-8.351352">
+            <state vertical-scroll-proportion="0.0">
               <caret line="78" column="38" selection-start-line="78" selection-start-column="38" selection-end-line="78" selection-end-column="38" />
               <folding>
                 <element signature="e#24#126#0" expanded="true" />
@@ -181,7 +179,6 @@
     </navigator>
     <panes>
       <pane id="Scratches" />
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -190,50 +187,9 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
             </PATH_ELEMENT>
           </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="upgraded-lamp" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="upgraded-lamp" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="upgraded-lamp" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="upgraded-lamp" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="templates" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="upgraded-lamp" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="upgraded-lamp" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="templates" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="admin" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
         </subPane>
       </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -478,10 +434,8 @@
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32975295" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.29752955" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3991131" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.31525242" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3292683" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.3292683" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3292683" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -489,7 +443,9 @@
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3292683" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3991131" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3292683" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
     </layout>
@@ -528,7 +484,7 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <option name="time" value="12" />
+      <option name="time" value="13" />
     </breakpoint-manager>
     <watches-manager />
   </component>
@@ -572,8 +528,7 @@
             <element signature="e#5736#6078#0" expanded="false" />
             <element signature="e#6156#6465#0" expanded="false" />
             <element signature="e#7076#7372#0" expanded="false" />
-            <element signature="e#8451#8582#0" expanded="false" />
-            <element signature="e#8671#8862#0" expanded="false" />
+            <element signature="e#8694#8885#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -617,8 +572,7 @@
             <element signature="e#5736#6078#0" expanded="false" />
             <element signature="e#6156#6465#0" expanded="false" />
             <element signature="e#7076#7372#0" expanded="false" />
-            <element signature="e#8451#8582#0" expanded="false" />
-            <element signature="e#8671#8862#0" expanded="false" />
+            <element signature="e#8694#8885#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -654,8 +608,7 @@
             <element signature="e#5736#6078#0" expanded="false" />
             <element signature="e#6156#6465#0" expanded="false" />
             <element signature="e#7076#7372#0" expanded="false" />
-            <element signature="e#8451#8582#0" expanded="false" />
-            <element signature="e#8671#8862#0" expanded="false" />
+            <element signature="e#8694#8885#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -699,8 +652,7 @@
             <element signature="e#5736#6078#0" expanded="false" />
             <element signature="e#6156#6465#0" expanded="false" />
             <element signature="e#7076#7372#0" expanded="false" />
-            <element signature="e#8451#8582#0" expanded="false" />
-            <element signature="e#8671#8862#0" expanded="false" />
+            <element signature="e#8694#8885#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -744,8 +696,7 @@
             <element signature="e#5736#6078#0" expanded="false" />
             <element signature="e#6156#6465#0" expanded="false" />
             <element signature="e#7076#7372#0" expanded="false" />
-            <element signature="e#8451#8582#0" expanded="false" />
-            <element signature="e#8671#8862#0" expanded="false" />
+            <element signature="e#8694#8885#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -789,16 +740,12 @@
             <element signature="e#5736#6078#0" expanded="false" />
             <element signature="e#6156#6465#0" expanded="false" />
             <element signature="e#7076#7372#0" expanded="false" />
-            <element signature="e#8451#8582#0" expanded="false" />
-            <element signature="e#8671#8862#0" expanded="false" />
+            <element signature="e#8694#8885#0" expanded="false" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/README.md">
-      <provider editor-type-id="MultiMarkdownFxPreviewEditor">
-        <state />
-      </provider>
       <provider selected="true" editor-type-id="split-provider[text-editor;MultiMarkdownPreviewEditor]">
         <state split_layout="FIRST">
           <first_editor vertical-scroll-proportion="0.0">
@@ -806,6 +753,9 @@
           </first_editor>
           <second_editor />
         </state>
+      </provider>
+      <provider editor-type-id="MultiMarkdownFxPreviewEditor">
+        <state />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/.gitignore">
@@ -847,16 +797,12 @@
             <element signature="e#5736#6078#0" expanded="false" />
             <element signature="e#6156#6465#0" expanded="false" />
             <element signature="e#7076#7372#0" expanded="false" />
-            <element signature="e#8451#8582#0" expanded="false" />
-            <element signature="e#8671#8862#0" expanded="false" />
+            <element signature="e#8694#8885#0" expanded="false" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/README.md">
-      <provider editor-type-id="MultiMarkdownFxPreviewEditor">
-        <state />
-      </provider>
       <provider selected="true" editor-type-id="split-provider[text-editor;MultiMarkdownPreviewEditor]">
         <state split_layout="FIRST">
           <first_editor vertical-scroll-proportion="0.0">
@@ -864,6 +810,9 @@
           </first_editor>
           <second_editor />
         </state>
+      </provider>
+      <provider editor-type-id="MultiMarkdownFxPreviewEditor">
+        <state />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/.gitignore">
@@ -905,8 +854,7 @@
             <element signature="e#5736#6078#0" expanded="false" />
             <element signature="e#6156#6465#0" expanded="false" />
             <element signature="e#7076#7372#0" expanded="false" />
-            <element signature="e#8451#8582#0" expanded="false" />
-            <element signature="e#8671#8862#0" expanded="false" />
+            <element signature="e#8694#8885#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -959,8 +907,7 @@
             <element signature="e#5736#6078#0" expanded="false" />
             <element signature="e#6156#6465#0" expanded="false" />
             <element signature="e#7076#7372#0" expanded="false" />
-            <element signature="e#8451#8582#0" expanded="false" />
-            <element signature="e#8671#8862#0" expanded="false" />
+            <element signature="e#8694#8885#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -1012,14 +959,6 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/README.md">
-      <provider editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="0" column="14" selection-start-line="0" selection-start-column="14" selection-end-line="0" selection-end-column="14" />
-        </state>
-      </provider>
-      <provider editor-type-id="MultiMarkdownFxPreviewEditor">
-        <state />
-      </provider>
       <provider selected="true" editor-type-id="split-provider[text-editor;MultiMarkdownPreviewEditor]">
         <state split_layout="FIRST">
           <first_editor vertical-scroll-proportion="0.0">
@@ -1027,6 +966,14 @@
           </first_editor>
           <second_editor />
         </state>
+      </provider>
+      <provider editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="14" selection-start-line="0" selection-start-column="14" selection-end-line="0" selection-end-column="14" />
+        </state>
+      </provider>
+      <provider editor-type-id="MultiMarkdownFxPreviewEditor">
+        <state />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/jsonScheme.py">
@@ -1059,13 +1006,12 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.3321617">
           <caret line="1151" column="0" selection-start-line="1151" selection-start-column="0" selection-end-line="1151" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/models.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-8.351352">
+        <state vertical-scroll-proportion="0.0">
           <caret line="78" column="38" selection-start-line="78" selection-start-column="38" selection-end-line="78" selection-end-column="38" />
           <folding>
             <element signature="e#24#126#0" expanded="true" />
@@ -1075,8 +1021,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/farm.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.7110694">
-          <caret line="124" column="0" selection-start-line="124" selection-start-column="0" selection-end-line="124" selection-end-column="0" />
+        <state vertical-scroll-proportion="0.38600725">
+          <caret line="264" column="39" selection-start-line="264" selection-start-column="39" selection-end-line="264" selection-end-column="39" />
           <folding>
             <element signature="e#24#63#0" expanded="true" />
             <element signature="e#1246#1465#0" expanded="false" />
@@ -1084,8 +1030,7 @@
             <element signature="e#5736#6078#0" expanded="false" />
             <element signature="e#6156#6465#0" expanded="false" />
             <element signature="e#7076#7372#0" expanded="false" />
-            <element signature="e#8451#8582#0" expanded="false" />
-            <element signature="e#8671#8862#0" expanded="false" />
+            <element signature="e#8694#8885#0" expanded="false" />
           </folding>
         </state>
       </provider>

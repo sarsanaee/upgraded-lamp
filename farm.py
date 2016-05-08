@@ -263,7 +263,7 @@ def set_gold(id):
 @app.route('/version', methods=['GET'])
 def get_last_version():
     version = Api.query.first().version
-    response = jsonify({"version": version})
+    response = jsonify({"version": version, "online_status": True})
     response.status_code = 200
     return response
 
@@ -678,30 +678,6 @@ def get_special_package():
     for i in packages:
         packages_list.append(i.to_dict())
     response = jsonify({"packages": packages_list})
-    response.status_code = 200
-    return response
-
-
-@app.route('/getHash', methods=['POST'])
-@hm.check_hmac
-def get_hash():
-    api_ver = request.json['api_version']
-    xml_ret = Xmlbase.query.filter_by(api_version=api_ver).first()
-    if xml_ret:
-        response = jsonify({"status": "200", 'hash': xml_ret.xml_code})
-        response.status_code = 200
-        return response
-    abort(404)
-
-
-@app.route('/aghax/setHash', methods=['POST'])
-def set_hash():
-    api_ver = request.json['api_version']
-    code = request.json['code']
-    xml_ret = Xmlbase(code, api_ver)
-    db_session.add(xml_ret)
-    db_session.commit()
-    response = jsonify({"status": "200"})
     response.status_code = 200
     return response
 
