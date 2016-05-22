@@ -110,7 +110,7 @@ class Hmac(object):
         if digestmod == None:
             digestmod = hashlib.sha256
         try:
-            hmac_token = hmac.new(secret, data, digestmod=digestmod)
+            hmac_token = hmac.new(str.encode(secret), data, digestmod=digestmod)
             return hmac_token
         except TypeError as err:
             raise err
