@@ -1,40 +1,41 @@
 # -*- coding: utf-8 -*-
-from flask import Flask, request, abort
-from database import db_session
-from models import User, Level, Transaction, Xmlbase, Giftcards, AdminUsers, Store, \
-    GameDb, Special_Packages, Api
-from database import init_db, Base
-from flask import jsonify, json
-from flask_hmac import Hmac
 import datetime
 import re
-#from celery import Celery
+from flask import request, abort
+from flask import jsonify, json
+from Api.database import db_session
+from Api.models import User, Level, Transaction, Xmlbase, Giftcards, AdminUsers, Store, \
+    GameDb, Special_Packages, Api
+from Api.database import init_db, Base
+from Api.flask_hmac import Hmac
 from flask_admin import Admin
 from flask.ext import login
-from myadmin import UserView, GiftCardView, LevelView, \
+from Api.myadmin import UserView, GiftCardView, LevelView, \
     MyAdminIndexView, AdminUsersView, XmlBaseView, \
     TransactionView, StoreView, GameDbView, SpecialPackView, ApiView
-from jsonScheme import gameDbJsonScheme
+from Api.jsonScheme import gameDbJsonScheme
 from werkzeug.contrib.cache import SimpleCache
 from flask_script import Manager
 from flask_migrate import Migrate, MigrateCommand
 import requests
+from Api import app
 
 cache = SimpleCache()
 init_db()
-app = Flask(__name__)
-app.config['HMAC_KEY'] = 'hBV+H7dt2aD/R3z'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:yokohama@localhost/FarmBase'
 migrate = Migrate(app, Base)
 manager = Manager(app)
 manager.add_command('db', MigrateCommand)
-app.debug = True
 hm = Hmac(app)
+gameDbSchemeConverter = gameDbJsonScheme()
 
-# app.config.update(
-#     CELERY_BROKER_URL='redis://localhost:6379',
-#     CELERY_RESULT_BACKEND='redis://localhost:6379'
-# )
+class SetEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, set):
+            return list(obj)
+        if isinstance(obj, (User, Level, int, str)):
+            return str(obj)
+        return json.JSONEncoder.default(self, obj)
+
 
 def init_login():
     login_manager = login.LoginManager()
@@ -48,40 +49,11 @@ def init_login():
 
 init_login()
 
-
-# def make_celery(app):
-#     celery = Celery(app.import_name, broker=app.config['CELERY_BROKER_URL'])
-#     celery.conf.update(app.config)
-#     TaskBase = celery.Task
-#
-#     class ContextTask(TaskBase):
-#         abstract = True
-#
-#         def __call__(self, *args, **kwargs):
-#             with app.app_context():
-#                 return TaskBase.__call__(self, *args, **kwargs)
-#
-#     celery.Task = ContextTask
-#     return celery
-#
-#
-# celery = make_celery(app)
-
-# app.config['CSRF_ENABLED'] = True
-# flask_wtf.CsrfProtect(app)
-
+#it has to be deleted until special amount of time because it is bas for project structure
 packages = {"Diamonds_G": 7, "Diamonds_F": 6, "Diamonds_E": 5, "Diamonds_D": 4, "Diamonds_C": 3, "Diamonds_B": 2,
             "Diamonds_A": 1}
 
-gameDbSchemeConverter = gameDbJsonScheme()
 
-class SetEncoder(json.JSONEncoder):
-    def default(self, obj):
-        if isinstance(obj, set):
-            return list(obj)
-        if isinstance(obj, (User, Level, int, str)):
-            return unicode(obj)
-        return json.JSONEncoder.default(self, obj)
 
 
 admin = Admin(app, name='farm_web_service', index_view=MyAdminIndexView(), base_template='my_master.html')
@@ -96,10 +68,6 @@ admin.add_view(StoreView(Store, db_session))
 admin.add_view(GameDbView(GameDb, db_session))
 admin.add_view(SpecialPackView(Special_Packages, db_session))
 admin.add_view(ApiView(Api, db_session))
-
-app.secret_key = '\xa1xec[\tg`\xac\x96\xafv\xff\xf6\x04\xa2bT\x13\xb6\xca\xf9@\xf2'
-cafebazaar_access_token = ""
-
 
 @app.route('/get_time', methods=['POST'])
 @hm.check_hmac
@@ -804,7 +772,8 @@ def get_rank(user_level, offset):
             usernames_list.append(a[i][5])
             time_list.append(a[i][4])
 
-        anar = json.dumps(usernames_list, cls=SetEncoder, ensure_ascii=False)
+        #anar = json.dumps(usernames_list, cls=SetEncoder, ensure_ascii=False)
+        anar = json.dumps(usernames_list, ensure_ascii=False)
         response = jsonify({'status': '200', 'username': anar, 'scores': time_list, 'index': index - start_index,
                             'rank': index + 1})
         response.status_code = 200
@@ -815,14 +784,6 @@ def get_rank(user_level, offset):
 @app.route('/get_rank/score/offset/<int:offset>', methods=['POST'])
 @hm.check_hmac
 def get_score(offset):
-    # player = db_session.query(User).filter_by().order_by(User.score.asc()).all() ## TODO: this function must be cached
-    ''''
-    player = cache.get('user_sorted_by_score')
-    if player is None:
-        player = db_session.query(User).filter_by().order_by(
-            User.score.asc()).all()  ## TODO: this function must be cached
-        cache.set('user_sorted_by_score', player, timeout=5 * 60)
-    '''
     player = db_session.query(User).filter_by().order_by(
         User.score.asc()).all()  ## TODO: this function must be cached
 
@@ -863,16 +824,7 @@ def get_score(offset):
 @app.route('/V1/get_rank/score/offset/<int:offset>', methods=['POST'])
 @hm.check_hmac
 def get_score_v1(offset):
-    # player = db_session.query(User).filter_by().order_by(User.score.asc()).all() ## TODO: this function must be cached
 
-
-    '''
-    player = cache.get('user_sorted_by_score')
-    if player is None:
-        player = db_session.query(User).filter_by().order_by(
-            User.score.asc()).all()  ## TODO: this function must be cached
-        cache.set('user_sorted_by_score', player, timeout=5 * 60)
-    '''
     player = db_session.query(User).filter_by().order_by(
         User.score.asc()).all()  ## TODO: this function must be cached
 
@@ -922,7 +874,6 @@ def get_bazzar_token():
 @app.route('/v1/validate_transaction', methods=['POST'])
 @hm.check_hmac
 def v1_validate_transaction():
-    #abort(500)
     product_id = request.json["product_id"]
     purchase_token = request.json["purchase_token"]
     request_validate = cafebazaar_send_validation_request(product_id, purchase_token)
@@ -1063,34 +1014,10 @@ def cafebazaar_send_validation_request(product_id, purchase_token):
     return result
 
 
+'''
 if __name__ == '__main__':
     app.debug = True
     #manager.run()
     app.run(host='0.0.0.0', port=6789)
-
-'''
-print("koscher")
-is_repeated_token = db_session.query(Transaction).filter_by(token=purchase_token).all()
-if request_validate and not is_repeated_token:
-    product_ids = db_session.query(Store.product_id).all()
-    special_packages_product_ids = db_session.query(Special_Packages.product_id).all()
-    user_db = GameDb.query.filter_by(user_id=request.json.get("id")).first()
-
-    for i in product_ids:
-        if product_id in i:
-            store = Store.query.filter_by(product_id=product_id).first()
-            user_db.Diamonds = store.diamond + user_db.Diamonds
-            transaction = Transaction(request.json.get("id"), store.discount, store.diamond, store.price, purchase_token, product_id)
-            db_session.add(transaction)
-            break
-    for i in special_packages_product_ids:
-        if product_id in i:
-            special_packages = Special_Packages.query.all()
-            user_db.Charecters = special_packages.charactor
-            user_db.Diamonds = special_packages.diamond + user_db.Diamonds
-            user_db.Coins = special_packages.coin + user_db.Coins
-            transaction = Transaction(request.json.get("id"), special_packages.discount, special_packages.diamond, special_packages.price, purchase_token, product_id)
-            db_session.add(transaction)
-            break
 
 '''

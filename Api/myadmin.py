@@ -9,8 +9,8 @@ from flask.ext.admin.contrib import sqla
 from flask.ext.admin import helpers, expose
 from werkzeug.security import generate_password_hash, check_password_hash
 
-from database import db_session
-from models import AdminUsers
+from Api.database import db_session
+from Api.models import AdminUsers
 
 
 class ApiView(ModelView):
