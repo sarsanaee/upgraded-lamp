@@ -15,8 +15,6 @@ from Api.myadmin import UserView, GiftCardView, LevelView, \
     TransactionView, StoreView, GameDbView, SpecialPackView, ApiView
 from Api.jsonScheme import gameDbJsonScheme
 from werkzeug.contrib.cache import SimpleCache
-from flask_script import Manager
-from flask_migrate import Migrate, MigrateCommand
 import requests
 from Api import app
 from flask.ext.cors import CORS
@@ -25,9 +23,6 @@ from flask.ext.cors import CORS
 CORS(app)
 cache = SimpleCache()
 init_db()
-# migrate = Migrate(app, Base)
-# manager = Manager(app)
-# manager.add_command('db', MigrateCommand)
 hm = Hmac(app)
 gameDbSchemeConverter = gameDbJsonScheme()
 
