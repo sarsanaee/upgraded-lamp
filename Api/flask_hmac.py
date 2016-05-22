@@ -18,6 +18,7 @@ class Hmac(object):
 
     def init_self(self, app):
         self.hmac_key = app.config['HMAC_KEY']
+        print(app.config['HMAC_KEY'])
         self.hmac_disarm = app.config.get('HMAC_DISARM', False)
 
 
