@@ -18,7 +18,6 @@ class Hmac(object):
 
     def init_self(self, app):
         self.hmac_key = app.config['HMAC_KEY']
-        print(app.config['HMAC_KEY'])
         self.hmac_disarm = app.config.get('HMAC_DISARM', False)
 
 
@@ -30,24 +29,36 @@ class Hmac(object):
             else:
                 try:
                     hmac_token = request.headers['HMAC']
+                    print(1)
                     expiration = request.headers['expiration']
+                    print(2)
+
                     hidden_index = int(expiration[7]) + 8
+                    print(3)
                     new_expiration = expiration[:hidden_index] + expiration[hidden_index+1:]
+                    print(4)
                     new_expiration = new_expiration[:7] + new_expiration[8:]
+                    print(5)
                     data = base64.b64decode(new_expiration)
+                    print(6)
                     a = data
+                    print(7)
                     d = datetime.strptime(a, "%m/%d/%Y %H:%M:%S")
+                    print(8)
                     converted_time = time.mktime(d.timetuple())
+                    print(9)
                     if time.time() - converted_time > 20000:
                         '''
                         We check the expiration date in every request in order to recognize
                         whether the request is created recently regardless the including data.
                         '''
+                        print(10)
                         message = {'status': '403', 'message': 'not authorized'}
                         response = jsonify(message)
                         response.status_code = 403
                         return response
                 except:
+                    print(11)
                     message = {'status': '403', 'message': 'not authorized'}
                     response = jsonify(message)
                     response.status_code = 403
