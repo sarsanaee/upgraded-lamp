@@ -76,7 +76,7 @@ class Hmac(object):
                 print(4)
                 new_expiration = new_expiration[:7] + new_expiration[8:]
                 print(5)
-                data = base64.b64decode(new_expiration)
+                data = base64.b64decode(new_expiration).decode('utf-8')
                 print(6)
                 a = data
                 print(7)
