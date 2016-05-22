@@ -259,6 +259,9 @@ class GameDb(Base):
     XpNextLevel = Column(Unicode, default=u'300', nullable=True)
     Gandoms = Column(Unicode, default=u'200', nullable=True)
     DatabaseRestored = Column(Integer, default=0, nullable=True)
+    LevelTutorial_Online = Column(Integer, default=0, nullable=True)
+    MapTutorial_Online = Column(Integer, default=0, nullable=True)
+    MainMenuTutorial_Online = Column(Integer, default=0, nullable=True)
     user_id = Column(Integer, ForeignKey('users.id'))
 
     __mapper_args__ = \
@@ -313,6 +316,9 @@ class GameDb(Base):
             self.XpNextLevel = json["XpNextLevel"]
             self.Charecters = json["Charecters"]
             self.DatabaseRestored = json["DatabaseRestored"]
+            self.LevelTutorial_Online = json["LevelTutorial_Online"]
+            self.MapTutorial_Online = json["MapTutorial_Online"]
+            self.MainMenuTutorial_Online = json["MainMenuTutorial_Online"]
         else:
             self.user_id = user_id
 
@@ -365,7 +371,10 @@ class GameDb(Base):
             "XpLevel": self.XpLevel,
             "XpNextLevel": self.XpNextLevel,
             "MusicState": self.MusicState,
-            "DatabaseRestored": self.DatabaseRestored
+            "DatabaseRestored": self.DatabaseRestored,
+            "LevelTutorial_Online": self.LevelTutorial_Online,
+            "MapTutorial_Online": self.MapTutorial_Online,
+            "MainMenuTutorial_Online": self.MainMenuTutorial_Online
         }
 
     def __unicode__(self):
