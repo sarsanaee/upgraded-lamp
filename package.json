@@ -1,0 +1,13 @@
+{
+"name": "Farmuler",
+"version": "0.1.0",
+"description": "It is a restful api documentation for online multiplayer game",
+"title": "FarmulerAPI",
+"url": "http://localhost:6789",
+"sampleUrl": "http://localhost:6789",
+"template": {
+"withCompare": true,
+"withGenerator": true
+}
+}
+

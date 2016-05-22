@@ -19,7 +19,10 @@ from flask_script import Manager
 from flask_migrate import Migrate, MigrateCommand
 import requests
 from Api import app
+from flask.ext.cors import CORS
 
+
+CORS(app)
 cache = SimpleCache()
 init_db()
 migrate = Migrate(app, Base)
@@ -72,13 +75,61 @@ admin.add_view(ApiView(Api, db_session))
 @app.route('/get_time', methods=['POST'])
 @hm.check_hmac
 def time_server():
+    """
+    @api {POST} /get_time/ Getting the time of server - Protected
+    @apiName time_server
+    @apiVersion 0.0.0
+    @apiGroup Time
+
+
+    @apiDescription It generates time of server in UTC.
+
+    @apiSuccess (Success 200) {string} status status of request
+    @apiSuccess (Success 200) {time} time    time generated for user
+
+    @apiSampleRequest off
+
+    @apiSuccessExample {js} Success-Response:
+        HTTP/1.0 200 OK
+        {
+            "status": "200",
+            "time": Sun, 22 May 2016 15:00:40 GMT
+        }
+    """
     time = datetime.datetime.now()
     response = jsonify({'status': '200', 'time': time})
     response.status_code = 200
     return response
 
+
+
+
+
 @app.route('/v1/get_time', methods=['GET'])
 def get_time_server():
+    """
+    @api {GET} /v1/get_time/ Getting the time of server
+    @apiName V1_time_server
+    @apiGroup Time
+    @apiVersion 0.0.1
+    @apiDescription It generates time of server in UTC.
+
+    @apiSuccess (Success 200) {string} status status of request
+    @apiSuccess (Success 200) {time} time    time generated for user
+
+
+    @apiSampleRequest /v1/get_time
+
+        @apiExample cURL example
+    $ curl /v1/get_time
+
+    @apiSuccessExample {js} Success-Response:
+        HTTP/1.0 200 OK
+        {
+            "status": "200",
+            "time": Sun, 22 May 2016 15:00:40 GMT
+        }
+    """
     time = datetime.datetime.now()
     response = jsonify({'status': '200', 'time': time})
     response.status_code = 200
@@ -87,6 +138,26 @@ def get_time_server():
 
 @app.route('/dailyreward/<int:id>', methods=['GET'])
 def daily_reward(id):
+    """
+    @api {GET} /dailyreward/:id Getting the daily reward of a player
+    @apiName daily reward
+    @apiGroup Daily Rewards
+    @apiVersion 0.0.1
+
+    @apiDescription It generates proper daily reward based on previous daily rewards of player
+
+    @apiParam {int} id Users unique ID.
+
+    @apiSuccess (Success 200) {status} string status of request
+
+    @apiSampleRequest off
+
+    @apiSuccessExample {js} Success-Response:
+        HTTP/1.0 200 OK
+        {
+            "status": "Ok",
+        }
+    """
     retrieved_user = User.query.filter_by(id=id).first()
     if retrieved_user:
         b = datetime.datetime.now()
@@ -103,6 +174,27 @@ def daily_reward(id):
 
 @app.route('/dailyreward/price/<int:id>', methods=['GET'])
 def daily_reward_price(id):
+    """
+    @api {GET} /dailyreward/price/:id Getting daily reward by money everyday
+    @apiName daily reward price
+    @apiGroup Daily Rewards
+    @apiVersion 0.0.1
+
+    @apiDescription It generates proper daily reward money based on previous daily rewards of player
+
+    @apiParam {int} id Users unique ID.
+
+    @apiSuccess (Success 200) {status} string status of request
+
+    @apiSampleRequest off
+
+    @apiSuccessExample {js} Success-Response:
+        HTTP/1.0 200 OK
+        {
+            "status": "Ok",
+            "count": 10
+        }
+    """
     retrieved_user = User.query.filter_by(id=id).first()
     if retrieved_user:
         b = datetime.datetime.now()
@@ -130,6 +222,26 @@ def daily_reward_price(id):
 
 @app.route('/dailyreward/price/count/<int:id>', methods=['GET'])
 def daily_reward_price_count(id):
+    """
+    @api {GET} /dailyreward/price/count/:id Getting number of daily rewards
+    @apiName daily reward price count
+    @apiGroup Daily Rewards
+    @apiVersion 0.0.1
+
+    @apiDescription This Api returns nubmer of daily rewards that a use has collected
+    @apiParam {int} id Users unique ID.
+
+    @apiSuccess (Success 200) {status} string status of request
+
+    @apiSampleRequest off
+
+    @apiSuccessExample {js} Success-Response:
+        HTTP/1.0 200 OK
+        {
+            "status": "Ok",
+            "count": 10
+        }
+    """
     retrieved_user = User.query.filter_by(id=id).first()
 
     if retrieved_user:
@@ -143,6 +255,34 @@ def daily_reward_price_count(id):
 @app.route('/editprofile', methods=['POST'])
 @hm.check_hmac
 def edit_profile():
+    """
+    @api {post} /editprofile Editing profile
+    @apiName edit_profile
+    @apiGroup Profile
+    @apiVersion 0.0.1
+
+    @apiDescription Users can edit their profile with this Api
+    @apiParam {int} id Users unique ID.
+    @apiParam {email} id Users Email.
+    @apiParam {password} id Users Password.
+
+    @apiSuccess (Success 200) {status} string status of request
+
+    @apiSampleRequest off
+
+    @apiSuccessExample {js} Success-Response:
+        HTTP/1.0 200 OK
+        {
+            "status": "updated"
+        }
+
+    @apiParamExample {json} Request-Example:
+    {
+        "id": 4711,
+        "email": "sarsanaee@gmail.com",
+        "password": "password"
+    }
+    """
     retrieved_user = User.query.filter_by(id=request.json.get('id')).first()
     if retrieved_user:
         retrieved_user.update_profile(request.json.get('email'), request.json.get('password'))
@@ -156,6 +296,31 @@ def edit_profile():
 @app.route('/V1/getid', methods=['POST'])
 @hm.check_hmac
 def get_id():
+    """
+    @api {post} /V1/getid getting UUID
+    @apiName get_id
+    @apiGroup Profile
+    @apiVersion 0.0.1
+
+    @apiDescription Getting id from unique username
+    @apiParam {string} username Users unique Username.
+
+    @apiSuccess (Success 200) {status} string status of request
+
+    @apiSampleRequest off
+
+    @apiSuccessExample {js} Success-Response:
+        HTTP/1.0 200 OK
+        {
+            "status": "200",
+            "id": 10
+        }
+
+    @apiParamExample {json} Request-Example:
+    {
+        "username": "sarsanaee"
+    }
+    """
     if request.json.get('username'):
         retrieved_user = User.query.filter_by(username=request.json.get('username')).first()
         if retrieved_user:
@@ -168,6 +333,35 @@ def get_id():
 @app.route('/login', methods=['POST'])
 @hm.check_hmac
 def login():
+    """
+    @api {post} /login Authentication
+    @apiName login
+    @apiGroup Authentication
+    @apiVersion 0.0.0
+
+    @apiDescription logging into your account
+    @apiParam {string} username Users unique Username.
+    @apiParam {string} password Users password.
+
+    @apiSuccess (Success 200) {status} string status of request
+
+    @apiSampleRequest off
+
+    @apiSuccessExample {js} Success-Response:
+        HTTP/1.0 200 OK
+        {
+            "status": "OK",
+            "id": 10,
+            "email": "sarsanaee@gmail.com",
+            "password": "password"
+        }
+
+    @apiParamExample {json} Request-Example:
+    {
+        "username": "sarsanaee",
+        "password": "password"
+    }
+    """
     retrieved_user = User.query.filter_by(username=request.json.get('username')).first()
     if retrieved_user and retrieved_user.password == request.json.get('password'):
         response = jsonify({'status': 'OK',
@@ -205,31 +399,26 @@ def datacorrector():
     db_session.commit()
     return "finished"
 
-
-'''
-@app.route('/V2/coin/<int:id>', methods=['GET'])
-def get_gold(id):
-    gamedb = GameDb.query.filter_by(user_id=id).first()
-    if gamedb:
-        response = jsonify({"gold": gamedb.Coins})
-        response.status_code = 200
-        return response
-    abort(404)
-
-@app.route('/V2/coin/<int:id>', methods=['POST'])
-def set_gold(id):
-    gamedb = GameDb.query.filter_by(user_id=id).first()
-    if gamedb:
-        gamedb.Coins = request.json["coin"]
-        gamedb.commit()
-        response = jsonify({"gold": gamedb.Coins, "status": "updated"})
-        response.status_code = 200
-        return response
-    abort(404)
-'''
-
 @app.route('/version', methods=['GET'])
 def get_last_version():
+    """
+    @api {get} /version Getting version
+    @apiName versions
+    @apiGroup General
+
+    @apiDescription getting latest version of the game published in cafebazzar
+
+    @apiSuccess (Success 200) {status} string status of request
+
+    @apiSampleRequest off
+
+    @apiSuccessExample {js} Success-Response:
+        HTTP/1.0 200 OK
+        {
+            "version": "OK",
+            "online_status": True
+        }
+    """
     version = Api.query.first().version
     response = jsonify({"version": version, "online_status": True})
     response.status_code = 200
@@ -261,19 +450,6 @@ def get_player_db(id):
 @app.route('/allgamedb', methods=['POST'])
 @hm.check_hmac
 def set_player_all_db():
-    '''
-    try:
-        gamedb = GameDb(request.json)
-        db_session.add(gamedb)
-        db_session.commit()
-        response = jsonify({"status": "ok"})
-        response.status_code = 201
-    except Exception:
-        response = jsonify({"status": "No User Found"})
-        response.status_code = 404
-
-    '''
-
     gamedb = GameDb.query.filter_by(user_id=request.json["id"]).first()
     if gamedb:
         gamedb.update_data(request.json)
@@ -579,19 +755,6 @@ def valid_giftcard():
         return response
     abort(404)
 
-
-@app.route('/aghax/set_giftcard', methods=['POST'])
-def set_gift_card():
-    gift_code = request.json['gift_code']
-    gift_count = request.json['gift_count']
-    gift_ret = Giftcards(gift_code, gift_count)
-    db_session.add(gift_ret)
-    db_session.commit()
-    response = jsonify({"status": "200"})
-    response.status_code = 200
-    return response
-
-
 @app.route('/set_character_bought', methods=['POST'])
 @hm.check_hmac
 def set_char_bought():
@@ -676,27 +839,9 @@ def set_gold_diamond(gold, diamond):
     abort(404)
 
 
-@app.route('/shopping/<int:package>', methods=['POST'])
-@hm.check_hmac
-def shopping(package):
-    response = jsonify({"status": "200"})
-    response.status_code = 200
-    return response
-
-
 @app.route('/V1/get_rank/level/<int:user_level>/offset/<int:offset>', methods=['POST'])
 @hm.check_hmac
 def get_rank_v1(user_level, offset):
-    '''
-    a = cache.get('V1_level_user_join_' + str(user_level))
-    if a is None:
-        a = db_session.query(User, Level).join(Level).add_columns(User.score, Level.level, Level.time, User.username). \
-            filter(Level.level == user_level).order_by(Level.time.asc()).all()  # TODO: this function must be cached
-        cache.set('V1_level_user_join_' + str(user_level), a, timeout=5 * 60)
-    '''
-    # a = db_session.query(User, Level).join(Level).add_columns(User.score, Level.level, Level.time, User.username). \
-    #            filter(Level.level == user_level).order_by(Level.time.asc()).all()
-
     a = db_session.query(User, Level).join(Level).add_columns(User.score, Level.level, Level.time, User.username). \
         filter(Level.level == user_level).order_by(Level.time.asc()).all()  # TODO: this function must be cached
 
@@ -737,16 +882,6 @@ def get_rank_v1(user_level, offset):
 @app.route('/get_rank/level/<int:user_level>/offset/<int:offset>', methods=['POST'])
 @hm.check_hmac
 def get_rank(user_level, offset):
-    # a = db_session.query(User, Level).join(Level).add_columns(User.score, Level.level, Level.time, User.username). \
-    #    filter(Level.level == user_level).order_by(Level.time.asc()).all() # TODO: this function must be cached
-    '''
-    a = cache.get('level_user_join_' + str(user_level))
-    if a is None:
-        a = db_session.query(User, Level).join(Level).add_columns(User.score, Level.level, Level.time, User.username). \
-            filter(Level.level == user_level).order_by(Level.time.asc()).all()  # TODO: this function must be cached
-        cache.set('level_user_join_' + str(user_level), a, timeout=5 * 60)
-    '''
-
     a = db_session.query(User, Level).join(Level).add_columns(User.score, Level.level, Level.time, User.username). \
         filter(Level.level == user_level).order_by(Level.time.asc()).all()  # TODO: this function must be cached
 
@@ -865,12 +1000,6 @@ def get_score_v1(offset):
         return response
     abort(404)
 
-
-@app.route('/bazzar', methods=['GET', 'POST'])
-def get_bazzar_token():
-    return request.data
-
-
 @app.route('/v1/validate_transaction', methods=['POST'])
 @hm.check_hmac
 def v1_validate_transaction():
@@ -904,18 +1033,6 @@ def v1_validate_transaction():
     response = jsonify({"status": result})
     response.status_code = 200
     return response
-
-
-@app.route('/check_validatation_testing', methods=['POST'])
-@hm.check_hmac
-def testing_validation1():
-    product_id = request.json["product_id"]
-    purchase_token = request.json["purchase_token"]
-    request_validate = cafebazaar_send_validation_request(product_id, purchase_token, 1)
-    response = jsonify({"status": request_validate})
-    response.status_code = 200
-    return response
-
 
 
 @app.route('/validate_transaction', methods=['POST'])
