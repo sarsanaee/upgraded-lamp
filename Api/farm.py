@@ -25,9 +25,9 @@ from flask.ext.cors import CORS
 CORS(app)
 cache = SimpleCache()
 init_db()
-migrate = Migrate(app, Base)
-manager = Manager(app)
-manager.add_command('db', MigrateCommand)
+# migrate = Migrate(app, Base)
+# manager = Manager(app)
+# manager.add_command('db', MigrateCommand)
 hm = Hmac(app)
 gameDbSchemeConverter = gameDbJsonScheme()
 
