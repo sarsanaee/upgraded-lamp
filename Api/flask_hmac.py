@@ -81,7 +81,7 @@ class Hmac(object):
                 a = data
                 print(7)
                 print(a)
-                d = datetime.strptime(a, "%m/%d/%Y %H:%M:%S")
+                d = datetime.strptime(str(a), "%m/%d/%Y %H:%M:%S")
                 print(8)
                 converted_time = time.mktime(d.timetuple())
                 print(9)
