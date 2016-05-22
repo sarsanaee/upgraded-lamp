@@ -197,12 +197,8 @@ class MyAdminIndexView(admin.AdminIndexView):
         form = RegistrationForm(request.form)
         if helpers.validate_form_on_submit(form):
             user = AdminUsers()
-
             form.populate_obj(user)
-            # we hash the users password to avoid saving it as plaintext in the db,
-            # remove to use plain text:
             user.password = generate_password_hash(form.password.data)
-
             db_session.add(user)
             db_session.commit()
 

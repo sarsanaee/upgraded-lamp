@@ -1,6 +1,4 @@
-__author__ = 'alireza'
-
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Unicode, Boolean, Text, NVARCHAR
+import sqlalchemy
 from database import Base
 from datetime import datetime, timedelta
 from sqlalchemy.orm import relationship
@@ -9,14 +7,13 @@ from sqlalchemy.orm import relationship
 class AdminUsers(Base):
     __tablename__ = 'AdminUsers'
 
-    id = Column(Integer, primary_key=True)
-    first_name = Column(String(100))
-    last_name = Column(String(100))
-    login = Column(String(80), unique=True)
-    email = Column(String(120))
-    password = Column(String(400))
+    id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
+    first_name = sqlalchemy.Column(sqlalchemy.String(100))
+    last_name = sqlalchemy.Column(sqlalchemy.String(100))
+    login = sqlalchemy.Column(sqlalchemy.String(80), unique=True)
+    email = sqlalchemy.Column(sqlalchemy.String(120))
+    password = sqlalchemy.Column(sqlalchemy.String(400))
 
-    # Flask-Login integration
     def is_authenticated(self):
         return True
 
@@ -36,24 +33,24 @@ class AdminUsers(Base):
 class User(Base):
     __tablename__ = 'users'
 
-    id = Column(Integer, primary_key=True, index=True)
+    id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True, index=True)
     # username = Column(Unicode(80), unique=True, index=True)
-    username = Column(Unicode(80), index=True)
-    password = Column(String(40))
-    email = Column(String(120))
-    register_date = Column(DateTime)
-    last_check = Column(DateTime)
-    total_level = Column(Integer)
-    shop = Column(Integer)
-    score = Column(Integer)
-    gold = Column(Integer)
-    diamond = Column(Integer)
-    chars_bought = Column(Integer)
-    is_banned = Column(Boolean)
-    wins = Column(Integer)
-    last_daily_reward_date = Column(DateTime)
-    daily_reward_with_price_count = Column(Integer, default=0)
-    daily_reward_with_price_date = Column(DateTime, default=datetime.now())
+    username = sqlalchemy.Column(sqlalchemy.Unicode(80), index=True)
+    password = sqlalchemy.Column(sqlalchemy.String(40))
+    email = sqlalchemy.Column(sqlalchemy.String(120))
+    register_date = sqlalchemy.Column(sqlalchemy.DateTime)
+    last_check = sqlalchemy.Column(sqlalchemy.DateTime)
+    total_level = sqlalchemy.Column(sqlalchemy.Integer)
+    shop = sqlalchemy.Column(sqlalchemy.Integer)
+    score = sqlalchemy.Column(sqlalchemy.Integer)
+    gold = sqlalchemy.Column(sqlalchemy.Integer)
+    diamond = sqlalchemy.Column(sqlalchemy.Integer)
+    chars_bought = sqlalchemy.Column(sqlalchemy.Integer)
+    is_banned = sqlalchemy.Column(sqlalchemy.Boolean)
+    wins = sqlalchemy.Column(sqlalchemy.Integer)
+    last_daily_reward_date = sqlalchemy.Column(sqlalchemy.DateTime)
+    daily_reward_with_price_count = sqlalchemy.Column(sqlalchemy.Integer, default=0)
+    daily_reward_with_price_date = sqlalchemy.Column(sqlalchemy.DateTime, default=datetime.now())
 
     status = relationship('Level', backref='users',
                           lazy='dynamic')
@@ -120,10 +117,10 @@ class User(Base):
 class Level(Base):
     __tablename__ = 'level'
 
-    id = Column(Integer, primary_key=True, index=True)
-    time = Column(Integer, index=True)
-    level = Column(Integer)
-    user_id = Column(Integer, ForeignKey('users.id'))
+    id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True, index=True)
+    time = sqlalchemy.Column(sqlalchemy.Integer, index=True)
+    level = sqlalchemy.Column(sqlalchemy.Integer)
+    user_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey('users.id'))
 
     __mapper_args__ = \
         {
@@ -145,14 +142,14 @@ class Level(Base):
 class Transaction(Base):
     __tablename__ = 'transaction'
 
-    id = Column(Integer, primary_key=True)
-    date = Column(DateTime)
-    discount = Column(Integer)
-    diamond = Column(Integer)
-    price = Column(Integer)
-    token = Column(String)
-    product_id = Column(String)
-    user_id = Column(Integer, ForeignKey('users.id'))
+    id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
+    date = sqlalchemy.Column(sqlalchemy.DateTime)
+    discount = sqlalchemy.Column(sqlalchemy.Integer)
+    diamond = sqlalchemy.Column(sqlalchemy.Integer)
+    price = sqlalchemy.Column(sqlalchemy.Integer)
+    token = sqlalchemy.Column(sqlalchemy.String)
+    product_id = sqlalchemy.Column(sqlalchemy.String)
+    user_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey('users.id'))
 
     # def __init__(self, id, discount, diamond, price):
     def __init__(self, id=None, discount=None, diamond=None, price=None, token=None, product_id=None):
@@ -171,14 +168,13 @@ class Transaction(Base):
 class Giftcards(Base):
     __tablename__ = 'giftcard'
 
-    id = Column(Integer, primary_key=True)
-    code = Column(Integer)
-    count = Column(Integer)
-    validity = Column(Integer)
-    diamond_count = Column(Integer)
-    username = Column(Unicode)
+    id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
+    code = sqlalchemy.Column(sqlalchemy.Integer)
+    count = sqlalchemy.Column(sqlalchemy.Integer)
+    validity = sqlalchemy.Column(sqlalchemy.Integer)
+    diamond_count = sqlalchemy.Column(sqlalchemy.Integer)
+    username = sqlalchemy.Column(sqlalchemy.Unicode)
 
-    # def __init__(self, code, count):
     def __init__(self, code=None, count=None, diamond_count=None):
         self.code = code
         self.validity = 1
@@ -192,11 +188,10 @@ class Giftcards(Base):
 class Xmlbase(Base):
     __tablename__ = 'xmlbase'
 
-    id = Column(Integer, primary_key=True)
-    xml_code = Column(String(64))
-    api_version = Column(String(10))
+    id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
+    xml_code = sqlalchemy.Column(sqlalchemy.String(64))
+    api_version = sqlalchemy.Column(sqlalchemy.String(10))
 
-    # def __init__(self, code, api_version):
     def __init__(self, code=None, api_version=None):
         self.xml_code = code
         self.api_version = api_version
@@ -208,61 +203,61 @@ class Xmlbase(Base):
 class GameDb(Base):
     __tablename__ = 'gamedb'
 
-    id = Column(Integer, primary_key=True)
-    IsInitilized = Column(Integer, default=0, nullable=True)
-    ActiveCarLevel_Capacity = Column(Unicode, default=u'1', nullable=True)
-    ActiveCarLevelSpeed = Column(Unicode, default=u'1', nullable=True)
-    ActiveHeliLevelCapacity = Column(Unicode, default=u'1', nullable=True)
-    ActiveHeliLevelSpeed = Column(Unicode, default=u'1', nullable=True)
-    ActiveBuilderLevel = Column(Unicode, default=u'1', nullable=True)
-    ActiveCar = Column(Unicode, default=u'1', nullable=True)
-    ActiveCharecter = Column(Unicode, default=u'0', nullable=True)
-    ActiveHeli = Column(String, default=u'1', nullable=True)
-    ActivePlantsLevel = Column(Unicode, default=u'1', nullable=True)
-    ActiveProductionLevel = Column(Unicode, default=u'1', nullable=True)
-    ActiveRepositoryLevel = Column(Unicode, default=u'1', nullable=True)
-    Charecters = Column(Unicode, default=u'1,0,0,0,0,0,0,0,0,0,0,0,0,0,0', nullable=True)
-    Coins = Column(Unicode, default=u'200', nullable=True)
-    CurrentLevel = Column(Unicode, default=u'0', nullable=True)
-    Diamonds = Column(Unicode, default=u'5', nullable=True)
-    FactoryLevel = Column(Unicode,
-                          default=u'T,F,F,T,T,F,T,F,F,T,F,F,T,F,F,T,F,F,T,F,F,T,F,F,T,F,F,T,F,F,T,F,F,T,F,F,T,F,F,T,F,F,T,F,F,T,F,F,T,F,F,T,F,F,T,F,F,T,F,F,T,F,F,T,F,F,T,F,F,'
-                          , nullable=True)
-    FarmCost = Column(Unicode, default=u'20', nullable=True)
-    GiveRate = Column(Unicode, default=u'0', nullable=True)
-    LastDayCounter = Column(Unicode, default=u'1', nullable=True)
-    LastDayPlayed = Column(Unicode, default=u'-1', nullable=True)
-    LastTempLevel = Column(Integer, default=0, nullable=True)
-    LevelsStatus = Column(Unicode,
-                          default=u'0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,',
-                          nullable=True)
-    LevelTimeStatus = Column(Unicode,
-                             default=u'3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,',
-                             nullable=True)
-    LevelTutorial1 = Column(Integer, default=0, nullable=True)
-    LevelTutorial2 = Column(Integer, default=0, nullable=True)
-    LevelTutorial3 = Column(Integer, default=0, nullable=True)
-    MainMenuTutorial = Column(Integer, default=0, nullable=True)
-    MapTutorial_1 = Column(Integer, default=0, nullable=True)
-    MapTutorial_2 = Column(Integer, default=0, nullable=True)
-    MusicState = Column(Integer, default=1, nullable=True)
-    pickedUpItemDeletionTime = Column(Unicode, default=u'10', nullable=True)
-    Prize = Column(Unicode, default=u'1', nullable=True)
-    Share = Column(Unicode, default=u'0', nullable=True)
-    WorkingTime = Column(Integer, default=u'0', nullable=True)
-    EffectState = Column(Integer, default=u'1', nullable=True)
-    username = Column(Unicode(80), nullable=True)
-    Email = Column(Unicode, nullable=True)
-    BuySpecialOffer = Column(Unicode, default=u'0', nullable=True)
-    XP = Column(Unicode, default=u'0', nullable=True)
-    XpLevel = Column(Unicode, default=u'0', nullable=True)
-    XpNextLevel = Column(Unicode, default=u'300', nullable=True)
-    Gandoms = Column(Unicode, default=u'200', nullable=True)
-    DatabaseRestored = Column(Integer, default=0, nullable=True)
-    LevelTutorial_Online = Column(Integer, default=0, nullable=True)
-    MapTutorial_Online = Column(Integer, default=0, nullable=True)
-    MainMenuTutorial_Online = Column(Integer, default=0, nullable=True)
-    user_id = Column(Integer, ForeignKey('users.id'))
+    id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
+    IsInitilized = sqlalchemy.Column(sqlalchemy.Integer, default=0, nullable=True)
+    ActiveCarLevel_Capacity = sqlalchemy.Column(sqlalchemy.Unicode, default=u'1', nullable=True)
+    ActiveCarLevelSpeed = sqlalchemy.Column(sqlalchemy.Unicode, default=u'1', nullable=True)
+    ActiveHeliLevelCapacity = sqlalchemy.Column(sqlalchemy.Unicode, default=u'1', nullable=True)
+    ActiveHeliLevelSpeed = sqlalchemy.Column(sqlalchemy.Unicode, default=u'1', nullable=True)
+    ActiveBuilderLevel = sqlalchemy.Column(sqlalchemy.Unicode, default=u'1', nullable=True)
+    ActiveCar = sqlalchemy.Column(sqlalchemy.Unicode, default=u'1', nullable=True)
+    ActiveCharecter = sqlalchemy.Column(sqlalchemy.Unicode, default=u'0', nullable=True)
+    ActiveHeli = sqlalchemy.Column(sqlalchemy.String, default=u'1', nullable=True)
+    ActivePlantsLevel = sqlalchemy.Column(sqlalchemy.Unicode, default=u'1', nullable=True)
+    ActiveProductionLevel = sqlalchemy.Column(sqlalchemy.Unicode, default=u'1', nullable=True)
+    ActiveRepositoryLevel = sqlalchemy.Column(sqlalchemy.Unicode, default=u'1', nullable=True)
+    Charecters = sqlalchemy.Column(sqlalchemy.Unicode, default=u'1,0,0,0,0,0,0,0,0,0,0,0,0,0,0', nullable=True)
+    Coins = sqlalchemy.Column(sqlalchemy.Unicode, default=u'200', nullable=True)
+    CurrentLevel = sqlalchemy.Column(sqlalchemy.Unicode, default=u'0', nullable=True)
+    Diamonds = sqlalchemy.Column(sqlalchemy.Unicode, default=u'5', nullable=True)
+    FactoryLevel = sqlalchemy.Column(sqlalchemy.Unicode,
+                                     default=u'T,F,F,T,T,F,T,F,F,T,F,F,T,F,F,T,F,F,T,F,F,T,F,F,T,F,F,T,F,F,T,F,F,T,F,F,T,F,F,T,F,F,T,F,F,T,F,F,T,F,F,T,F,F,T,F,F,T,F,F,T,F,F,T,F,F,T,F,F,'
+                                     , nullable=True)
+    FarmCost = sqlalchemy.Column(sqlalchemy.Unicode, default=u'20', nullable=True)
+    GiveRate = sqlalchemy.Column(sqlalchemy.Unicode, default=u'0', nullable=True)
+    LastDayCounter = sqlalchemy.Column(sqlalchemy.Unicode, default=u'1', nullable=True)
+    LastDayPlayed = sqlalchemy.Column(sqlalchemy.Unicode, default=u'-1', nullable=True)
+    LastTempLevel = sqlalchemy.Column(sqlalchemy.Integer, default=0, nullable=True)
+    LevelsStatus = sqlalchemy.Column(sqlalchemy.Unicode,
+                                     default=u'0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,',
+                                     nullable=True)
+    LevelTimeStatus = sqlalchemy.Column(sqlalchemy.Unicode,
+                                        default=u'3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,3599,',
+                                        nullable=True)
+    LevelTutorial1 = sqlalchemy.Column(sqlalchemy.Integer, default=0, nullable=True)
+    LevelTutorial2 = sqlalchemy.Column(sqlalchemy.Integer, default=0, nullable=True)
+    LevelTutorial3 = sqlalchemy.Column(sqlalchemy.Integer, default=0, nullable=True)
+    MainMenuTutorial = sqlalchemy.Column(sqlalchemy.Integer, default=0, nullable=True)
+    MapTutorial_1 = sqlalchemy.Column(sqlalchemy.Integer, default=0, nullable=True)
+    MapTutorial_2 = sqlalchemy.Column(sqlalchemy.Integer, default=0, nullable=True)
+    MusicState = sqlalchemy.Column(sqlalchemy.Integer, default=1, nullable=True)
+    pickedUpItemDeletionTime = sqlalchemy.Column(sqlalchemy.Unicode, default=u'10', nullable=True)
+    Prize = sqlalchemy.Column(sqlalchemy.Unicode, default=u'1', nullable=True)
+    Share = sqlalchemy.Column(sqlalchemy.Unicode, default=u'0', nullable=True)
+    WorkingTime = sqlalchemy.Column(sqlalchemy.Integer, default=u'0', nullable=True)
+    EffectState = sqlalchemy.Column(sqlalchemy.Integer, default=u'1', nullable=True)
+    username = sqlalchemy.Column(sqlalchemy.Unicode(80), nullable=True)
+    Email = sqlalchemy.Column(sqlalchemy.Unicode, nullable=True)
+    BuySpecialOffer = sqlalchemy.Column(sqlalchemy.Unicode, default=u'0', nullable=True)
+    XP = sqlalchemy.Column(sqlalchemy.Unicode, default=u'0', nullable=True)
+    XpLevel = sqlalchemy.Column(sqlalchemy.Unicode, default=u'0', nullable=True)
+    XpNextLevel = sqlalchemy.Column(sqlalchemy.Unicode, default=u'300', nullable=True)
+    Gandoms = sqlalchemy.Column(sqlalchemy.Unicode, default=u'200', nullable=True)
+    DatabaseRestored = sqlalchemy.Column(sqlalchemy.Integer, default=0, nullable=True)
+    LevelTutorial_Online = sqlalchemy.Column(sqlalchemy.Integer, default=0, nullable=True)
+    MapTutorial_Online = sqlalchemy.Column(sqlalchemy.Integer, default=0, nullable=True)
+    MainMenuTutorial_Online = sqlalchemy.Column(sqlalchemy.Integer, default=0, nullable=True)
+    user_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey('users.id'))
 
     __mapper_args__ = \
         {
@@ -384,16 +379,16 @@ class GameDb(Base):
 class Special_Packages(Base):
     __tablename__ = 'specialpack'
 
-    id = Column(Integer, primary_key=True)
-    product_id = Column(Unicode)
-    price = Column(Integer)
-    number = Column(Integer)
-    coin = Column(Integer)
-    diamond = Column(Integer)
-    discount_price = Column(Integer)
-    character = Column(Boolean)
-    discount = Column(Integer)
-    gandom = Column(Integer)
+    id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
+    product_id = sqlalchemy.Column(sqlalchemy.Unicode)
+    price = sqlalchemy.Column(sqlalchemy.Integer)
+    number = sqlalchemy.Column(sqlalchemy.Integer)
+    coin = sqlalchemy.Column(sqlalchemy.Integer)
+    diamond = sqlalchemy.Column(sqlalchemy.Integer)
+    discount_price = sqlalchemy.Column(sqlalchemy.Integer)
+    character = sqlalchemy.Column(sqlalchemy.Boolean)
+    discount = sqlalchemy.Column(sqlalchemy.Integer)
+    gandom = sqlalchemy.Column(sqlalchemy.Integer)
 
     __mapper_args__ = \
         {
@@ -441,12 +436,12 @@ class Special_Packages(Base):
 class Store(Base):
     __tablename__ = 'store'
 
-    id = Column(Integer, primary_key=True)
-    product_id = Column(Unicode)
-    price = Column(Integer)
-    number = Column(Integer)
-    diamond = Column(Integer)
-    discount = Column(Integer)
+    id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
+    product_id = sqlalchemy.Column(sqlalchemy.Unicode)
+    price = sqlalchemy.Column(sqlalchemy.Integer)
+    number = sqlalchemy.Column(sqlalchemy.Integer)
+    diamond = sqlalchemy.Column(sqlalchemy.Integer)
+    discount = sqlalchemy.Column(sqlalchemy.Integer)
 
     __mapper_args__ = \
         {
@@ -467,29 +462,11 @@ class Store(Base):
 class Api(Base):
     __tablename__ = 'api'
 
-    id = Column(Integer, primary_key=True)
-    version = Column(Unicode)
+    id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
+    version = sqlalchemy.Column(sqlalchemy.Unicode)
 
     def __init__(self, version=None):
         self.version = version
 
     def __unicode__(self):
         return self.version
-
-
-'''
-class SpecialOffer(Base):
-    __tablename__ = 'store'
-
-    id = Column(Integer, primary_key=True)
-    cost = Column(String(30))
-    discount = Column(String(30))
-
-
-    def __init__(self, cost=None, discount=None):
-        self.cost = cost
-        self.discount = discount
-
-    def __unicode__(self):
-        return self.cost + ":" + self.discount
-'''
