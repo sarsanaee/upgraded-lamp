@@ -10,7 +10,7 @@ manager = Manager(app)
 manager.add_command('db', MigrateCommand)
 
 if __name__ == '__main__':
-    #app.debug = app.config["DEBUG"]
-    manager.run()
-    #app.run(host=app.config["HOST"], port=app.config["PORT"])
+    app.debug = app.config["DEBUG"]
+    #manager.run()
+    app.run(host=app.config["HOST"], port=app.config["PORT"])
 

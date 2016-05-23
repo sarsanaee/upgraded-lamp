@@ -464,12 +464,13 @@ def set_player_all_db():
 @hm.check_hmac
 def set_player_db():
     gamedb = GameDb.query.filter_by(user_id=request.json["id"]).first()
-    for i in request.json.keys():
-         setattr(gamedb, gameDbSchemeConverter.get_correspond(i), request.json[i])
-    db_session.commit()
-    response = jsonify({"status": "updated"})
-    return response
-
+    if(gamedb):
+        for i in request.json.keys():
+             setattr(gamedb, gameDbSchemeConverter.get_correspond(i), request.json[i])
+        db_session.commit()
+        response = jsonify({"status": "updated"})
+        return response
+    abort(404)
 
 @app.route('/register', methods=['POST'])
 @hm.check_hmac

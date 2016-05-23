@@ -1,4 +1,3 @@
-TEST = "abbas"
 HMAC_KEY = 'hBV+H7dt2aD/R3z'
 SQLALCHEMY_DATABASE_URI = 'postgresql://postgres:yokohama@localhost/FarmBase'
 DEBUG = True
