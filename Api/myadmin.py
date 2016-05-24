@@ -33,11 +33,6 @@ class StoreView(ModelView):
         return login.current_user.is_authenticated()
 
 
-class XmlBaseView(ModelView):
-    def is_accessible(self):
-        return login.current_user.is_authenticated()
-
-
 class TransactionView(ModelView):
     column_searchable_list = ['token']
     page_size = 100

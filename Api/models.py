@@ -187,21 +187,6 @@ class Giftcards(Base):
         return '<Gift_card id %r >' % self.id
 
 
-class Xmlbase(Base):
-    __tablename__ = 'xmlbase'
-
-    id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
-    xml_code = sqlalchemy.Column(sqlalchemy.String(64))
-    api_version = sqlalchemy.Column(sqlalchemy.String(10))
-
-    def __init__(self, code=None, api_version=None):
-        self.xml_code = code
-        self.api_version = api_version
-
-    def __repr__(self):
-        return '<Xml_Code id %r >' % self.id
-
-
 class GameDb(Base):
     __tablename__ = 'gamedb'
 

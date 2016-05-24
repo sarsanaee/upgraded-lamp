@@ -4,7 +4,7 @@ import re
 from flask import request, abort
 from flask import jsonify, json
 from Api.database import db_session
-from Api.models import User, Level, Transaction, Xmlbase, Giftcards, AdminUsers, Store, \
+from Api.models import User, Level, Transaction, Giftcards, AdminUsers, Store, \
     GameDb, Special_Packages, Api
 from Api.database import init_db, Base
 from Api.flask_hmac import Hmac
@@ -19,12 +19,12 @@ import requests
 from Api import app
 from flask.ext.cors import CORS
 
-
 CORS(app)
 cache = SimpleCache()
 init_db()
 hm = Hmac(app)
 gameDbSchemeConverter = gameDbJsonScheme()
+
 
 class SetEncoder(json.JSONEncoder):
     def default(self, obj):
@@ -47,25 +47,22 @@ def init_login():
 
 init_login()
 
-#it has to be deleted until special amount of time because it is bas for project structure
+# it has to be deleted until special amount of time because it is bas for project structure
 packages = {"Diamonds_G": 7, "Diamonds_F": 6, "Diamonds_E": 5, "Diamonds_D": 4, "Diamonds_C": 3, "Diamonds_B": 2,
             "Diamonds_A": 1}
-
-
-
 
 admin = Admin(app, name='farm_web_service', index_view=MyAdminIndexView(), base_template='my_master.html')
 
 admin.add_view(UserView(User, db_session))
 admin.add_view(LevelView(Level, db_session))
 admin.add_view(TransactionView(Transaction, db_session))
-admin.add_view(XmlBaseView(Xmlbase, db_session))
 admin.add_view(GiftCardView(Giftcards, db_session))
 admin.add_view(AdminUsersView(AdminUsers, db_session))
 admin.add_view(StoreView(Store, db_session))
 admin.add_view(GameDbView(GameDb, db_session))
 admin.add_view(SpecialPackView(Special_Packages, db_session))
 admin.add_view(ApiView(Api, db_session))
+
 
 @app.route('/get_time', methods=['POST'])
 @hm.check_hmac
@@ -95,9 +92,6 @@ def time_server():
     response = jsonify({'status': '200', 'time': time})
     response.status_code = 200
     return response
-
-
-
 
 
 @app.route('/v1/get_time', methods=['GET'])
@@ -394,6 +388,7 @@ def datacorrector():
     db_session.commit()
     return "finished"
 
+
 @app.route('/version', methods=['GET'])
 def get_last_version():
     """
@@ -419,6 +414,7 @@ def get_last_version():
     response.status_code = 200
     return response
 
+
 @app.route('/V1/purchase_log', methods=['POST'])
 @hm.check_hmac
 def client_logs():
@@ -428,8 +424,6 @@ def client_logs():
     response = jsonify({'status': '200'})
     response.status_code = 200
     return response
-
-
 
 
 @app.route('/gamedb/<int:id>', methods=['GET'])
@@ -464,13 +458,14 @@ def set_player_all_db():
 @hm.check_hmac
 def set_player_db():
     gamedb = GameDb.query.filter_by(user_id=request.json["id"]).first()
-    if(gamedb):
+    if (gamedb):
         for i in request.json.keys():
-             setattr(gamedb, gameDbSchemeConverter.get_correspond(i), request.json[i])
+            setattr(gamedb, gameDbSchemeConverter.get_correspond(i), request.json[i])
         db_session.commit()
         response = jsonify({"status": "updated"})
         return response
     abort(404)
+
 
 @app.route('/register', methods=['POST'])
 @hm.check_hmac
@@ -497,16 +492,15 @@ def register():
         # abort(409)
     u = User(request.json['username'], request.json['password'], request.json['email'])
 
-    #generating proper game db for new user
+    # generating proper game db for new user
     db_session.add(u)
     db_session.commit()
 
-    new_gamedb = GameDb(None, u.id) # creating new game db for new user
+    new_gamedb = GameDb(None, u.id)  # creating new game db for new user
     new_gamedb.username = u.username
     new_gamedb.Email = u.email
     db_session.add(new_gamedb)
     db_session.commit()
-
 
     response = jsonify({'status': 201, 'id': u.id})
     response.status_code = 201
@@ -751,6 +745,7 @@ def valid_giftcard():
         return response
     abort(404)
 
+
 @app.route('/set_character_bought', methods=['POST'])
 @hm.check_hmac
 def set_char_bought():
@@ -903,7 +898,7 @@ def get_rank(user_level, offset):
             usernames_list.append(a[i][5])
             time_list.append(a[i][4])
 
-        #anar = json.dumps(usernames_list, cls=SetEncoder, ensure_ascii=False)
+        # anar = json.dumps(usernames_list, cls=SetEncoder, ensure_ascii=False)
         anar = json.dumps(usernames_list, ensure_ascii=False)
         response = jsonify({'status': '200', 'username': anar, 'scores': time_list, 'index': index - start_index,
                             'rank': index + 1})
@@ -955,7 +950,6 @@ def get_score(offset):
 @app.route('/V1/get_rank/score/offset/<int:offset>', methods=['POST'])
 @hm.check_hmac
 def get_score_v1(offset):
-
     player = db_session.query(User).filter_by().order_by(
         User.score.asc()).all()  ## TODO: this function must be cached
 
@@ -995,6 +989,7 @@ def get_score_v1(offset):
         response.status_code = 200
         return response
     abort(404)
+
 
 @app.route('/v1/validate_transaction', methods=['POST'])
 @hm.check_hmac
