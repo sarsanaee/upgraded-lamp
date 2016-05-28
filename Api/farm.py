@@ -11,7 +11,7 @@ from Api.flask_hmac import Hmac
 from flask_admin import Admin
 from flask.ext import login
 from Api.myadmin import UserView, GiftCardView, LevelView, \
-    MyAdminIndexView, AdminUsersView, XmlBaseView, \
+    MyAdminIndexView, AdminUsersView, \
     TransactionView, StoreView, GameDbView, SpecialPackView, ApiView
 from Api.jsonScheme import gameDbJsonScheme
 from werkzeug.contrib.cache import SimpleCache
