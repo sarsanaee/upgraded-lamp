@@ -9,15 +9,16 @@ from Api.models import User, Level, Transaction, Giftcards, AdminUsers, Store, \
 from Api.database import init_db, Base
 from Api.flask_hmac import Hmac
 from flask_admin import Admin
-from flask.ext import login
+import flask_login as login
 from Api.myadmin import UserView, GiftCardView, LevelView, \
     MyAdminIndexView, AdminUsersView, \
-    TransactionView, StoreView, GameDbView, SpecialPackView, ApiView
+    TransactionView, StoreView, GameDbView, SpecialPackView, \
+    ApiView, OnlineServerView
 from Api.jsonScheme import gameDbJsonScheme
 from werkzeug.contrib.cache import SimpleCache
 import requests
 from Api import app
-from flask.ext.cors import CORS
+from flask_cors import CORS
 
 CORS(app)
 cache = SimpleCache()
@@ -62,6 +63,7 @@ admin.add_view(StoreView(Store, db_session))
 admin.add_view(GameDbView(GameDb, db_session))
 admin.add_view(SpecialPackView(Special_Packages, db_session))
 admin.add_view(ApiView(Api, db_session))
+admin.add_view(OnlineServerView(OnlineServer, db_session))
 
 
 @app.route('/get_time', methods=['POST'])
@@ -1022,6 +1024,7 @@ def v1_validate_transaction():
 
         db_session.commit()
 
+    print(result)
     response = jsonify({"status": result})
     response.status_code = 200
     return response

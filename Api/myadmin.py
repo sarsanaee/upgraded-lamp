@@ -4,21 +4,50 @@ from flask_admin.contrib.sqla import ModelView
 import flask_wtf
 from flask import url_for, redirect, request
 from wtforms import form, fields, validators
-from flask.ext import admin, login
-from flask.ext.admin.contrib import sqla
-from flask.ext.admin import helpers, expose
+from flask_admin.contrib import sqla
+from flask_admin import helpers, expose
 from werkzeug.security import generate_password_hash, check_password_hash
-
+from Api.models import User
 from Api.database import db_session
 from Api.models import AdminUsers
-
+import flask_login as login
+import flask_admin as admin
 
 class ApiView(ModelView):
     def is_accessible(self):
         return login.current_user.is_authenticated()
 
+class OnlineServerView(ModelView):
+
+    def is_accessible(self):
+        return login.current_user.is_authenticated()
+
 class GameDbView(ModelView):
-    column_display_pk = True
+    #column_display_pk = True
+    create_modal = False
+    can_export = True
+
+
+    column_searchable_list = (
+        (User.username),
+        'XP'
+    )
+    column_exclude_list = ('LevelsStatus',
+                           'LevelTimeStatus',
+                           'FactoryLevel',
+                           'Charecters',
+                           'LevelTutorial1',
+                           'LevelTutorial2',
+                           'LevelTutorial3',
+                           'MainMenuTutorial',
+                           'MapTutorial_1',
+                           'MapTutorial_2',
+                           'username'
+                           )
+    can_view_details = True
+    form_excluded_columns = ['users',]
+
+
 
     def is_accessible(self):
         return login.current_user.is_authenticated()
@@ -34,8 +63,14 @@ class StoreView(ModelView):
 
 
 class TransactionView(ModelView):
-    column_searchable_list = ['token']
+    column_searchable_list = (
+        (User.username),
+        'token'
+    )
     page_size = 100
+
+    form_excluded_columns = ['users',]
+
 
 
     def is_accessible(self):
@@ -52,6 +87,7 @@ class GiftCardView(ModelView):
 
 
 class UserView(ModelView):
+    can_export = True
     form_base_class = flask_wtf.Form
     form_columns = ('username',
                     'email',
@@ -89,7 +125,6 @@ class UserView(ModelView):
                       'total_level']
     page_size = 100
     column_display_pk = True
-    can_export = False
     can_edit = True
 
     column_formatters = dict(username=lambda v, c, m, p: m.username if all(ord(c) < 128 for c in m.username) else m.username[::-1])
@@ -123,7 +158,7 @@ class AdminUsersView(ModelView):
 
 
 class LoginForm(form.Form):
-    login = fields.TextField(validators=[validators.required()])
+    login = fields.StringField(validators=[validators.required()])
     password = fields.PasswordField(validators=[validators.required()])
 
     def validate_login(self, field):

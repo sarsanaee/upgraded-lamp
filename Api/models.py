@@ -261,6 +261,7 @@ class GameDb(Base):
                                    nullable=True)
     user_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey('users.id'))
 
+
     __mapper_args__ = \
         {
             "order_by": id
