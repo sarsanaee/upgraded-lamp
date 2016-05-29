@@ -5,7 +5,7 @@ from flask import request, abort
 from flask import jsonify, json
 from Api.database import db_session
 from Api.models import User, Level, Transaction, Giftcards, AdminUsers, Store, \
-    GameDb, Special_Packages, Api
+    GameDb, Special_Packages, Api, OnlineServer
 from Api.database import init_db, Base
 from Api.flask_hmac import Hmac
 from flask_admin import Admin
@@ -410,7 +410,8 @@ def get_last_version():
         }
     """
     version = Api.query.first().version
-    response = jsonify({"version": version, "online_status": True})
+    online = OnlineServer.query.first().status
+    response = jsonify({"version": version, "online_status": online})
     response.status_code = 200
     return response
 

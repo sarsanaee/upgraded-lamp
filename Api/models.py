@@ -140,6 +140,18 @@ class Level(Base):
     def __repr__(self):
         return '%r' % self.id
 
+class OnlineServer(Base):
+    __tablename__ = 'online_server'
+
+    id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True, index=True)
+    status = sqlalchemy.Column(sqlalchemy.Boolean)
+
+    def __init__(self, status=None):
+        self.status = status
+
+    def __repr__(self):
+        return '%r' % self.id
+
 
 class Transaction(Base):
     __tablename__ = 'transaction'
@@ -208,8 +220,8 @@ class GameDb(Base):
     CurrentLevel = sqlalchemy.Column(sqlalchemy.Unicode, default=u'0', nullable=True)
     Diamonds = sqlalchemy.Column(sqlalchemy.Unicode, default=u'5', nullable=True)
     FactoryLevel = sqlalchemy.Column(sqlalchemy.Unicode,
-                                     default=u'T,F,F,T,T,F,T,F,F,T,F,F,T,F,F,T,F,F,T,F,F,T,F,F,T,F,F,T,F,F,T,F,F,T,F,F,T,F,F,T,F,F,T,F,F,T,F,F,T,F,F,T,F,F,T,F,F,T,F,F,T,F,F,T,F,F,T,F,F,'
-                                     , nullable=True)
+                                     default=u'T,F,F,T,T,F,T,F,F,T,F,F,T,F,F,T,F,F,T,F,F,T,F,F,T,F,F,T,F,F,T,F,F,T,F,F,T,F,F,T,F,F,T,F,F,T,F,F,T,F,F,T,F,F,T,F,F,T,F,F,T,F,F,T,F,F,T,F,F,',
+                                     nullable=True)
     FarmCost = sqlalchemy.Column(sqlalchemy.Unicode, default=u'20', nullable=True)
     GiveRate = sqlalchemy.Column(sqlalchemy.Unicode, default=u'0', nullable=True)
     LastDayCounter = sqlalchemy.Column(sqlalchemy.Unicode, default=u'1', nullable=True)
@@ -244,6 +256,9 @@ class GameDb(Base):
     LevelTutorial_Online = sqlalchemy.Column(sqlalchemy.Integer, default=0, nullable=True)
     MapTutorial_Online = sqlalchemy.Column(sqlalchemy.Integer, default=0, nullable=True)
     MainMenuTutorial_Online = sqlalchemy.Column(sqlalchemy.Integer, default=0, nullable=True)
+    FactoryBuy = sqlalchemy.Column(sqlalchemy.Unicode,
+                                   default='FTFFFFFFFFFFFFFFFFFFFFF',
+                                   nullable=True)
     user_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey('users.id'))
 
     __mapper_args__ = \
@@ -301,6 +316,7 @@ class GameDb(Base):
             self.LevelTutorial_Online = json["LevelTutorial_Online"]
             self.MapTutorial_Online = json["MapTutorial_Online"]
             self.MainMenuTutorial_Online = json["MainMenuTutorial_Online"]
+            self.FactoryBuy = json["FactoryBuy"]
         else:
             self.user_id = user_id
 
@@ -356,7 +372,8 @@ class GameDb(Base):
             "DatabaseRestored": self.DatabaseRestored,
             "LevelTutorial_Online": self.LevelTutorial_Online,
             "MapTutorial_Online": self.MapTutorial_Online,
-            "MainMenuTutorial_Online": self.MainMenuTutorial_Online
+            "MainMenuTutorial_Online": self.MainMenuTutorial_Online,
+            "FactoryBuy": self.FactoryBuy
         }
 
     def __unicode__(self):
