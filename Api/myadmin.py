@@ -206,7 +206,7 @@ class MyAdminIndexView(admin.AdminIndexView):
             return redirect(url_for('.login_view'))
         return super(MyAdminIndexView, self).index()
 
-    @expose('/login/', methods=('GET', 'POST'))
+    @expose('/login/', methods=('GET'))#, 'POST'))
     def login_view(self):
         # handle user login
         form = LoginForm(request.form)
