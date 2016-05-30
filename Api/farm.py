@@ -1000,24 +1000,18 @@ def v1_validate_transaction():
     product_id = request.json["product_id"]
     purchase_token = request.json["purchase_token"]
     request_validate = cafebazaar_send_validation_request(product_id, purchase_token)
-    print(request_validate)
     is_repeated_token = db_session.query(Transaction).filter_by(token=purchase_token).all()
-    print(is_repeated_token)
     result = request_validate and len(is_repeated_token) == 0
     if result:
         store_product_ids = db_session.query(Store.product_id).all()
-        print(1)
         special_packages_product_ids = db_session.query(Special_Packages.product_id).all()
-        print(2)
         for i in store_product_ids:
             if product_id in i:
                 store = Store.query.filter_by(product_id=product_id).first()
                 transaction = Transaction(request.json.get("id"), store.discount, store.diamond, store.price,
                                           purchase_token, product_id)
                 db_session.add(transaction)
-                print("shit")
                 break
-        print(3)
         for i in special_packages_product_ids:
             if product_id in i:
                 special_packages = Special_Packages.query.filter_by(product_id=product_id).first()
@@ -1025,9 +1019,7 @@ def v1_validate_transaction():
                                           special_packages.price, purchase_token, product_id)
                 db_session.add(transaction)
                 break
-        print(5)
         db_session.commit()
-
     print(result)
     response = jsonify({"status": result})
     response.status_code = 200
