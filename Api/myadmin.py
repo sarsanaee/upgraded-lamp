@@ -206,7 +206,7 @@ class MyAdminIndexView(admin.AdminIndexView):
             return redirect(url_for('.login_view'))
         return super(MyAdminIndexView, self).index()
 
-    @expose('/login/', methods=('GET'))#, 'POST'))
+    @expose('/login/', methods=('GET', 'POST'))
     def login_view(self):
         # handle user login
         form = LoginForm(request.form)
@@ -222,7 +222,7 @@ class MyAdminIndexView(admin.AdminIndexView):
         return super(MyAdminIndexView, self).index()
 
     #############################################
-    @expose('/register/', methods=('GET', 'POST'))#, 'POST'))
+    @expose('/register/', methods=('GET'))#, 'POST'))
     def register_view(self):
         form = RegistrationForm(request.form)
         if helpers.validate_form_on_submit(form):
