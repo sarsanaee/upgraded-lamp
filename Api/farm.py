@@ -1118,7 +1118,8 @@ def cafebazaar_send_validation_request(product_id, purchase_token):
               .format(access_token=bazzar_access_token)
     r = requests.get(url, verify=False)
     return_json = json.loads(r.text)
-    result = return_json.get('error') is None
+    print(return_json)
+    result = r.status_code == 200 and return_json.get('error') is None
     return result
 
 
