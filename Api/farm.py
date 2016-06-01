@@ -1119,13 +1119,30 @@ def cafebazaar_refresh_auth():
 
 # @celery.task(name='req')
 def cafebazaar_send_validation_request(product_id, purchase_token):
+    '''
     bazzar_access_token = cafebazaar_refresh_auth()
     url = "https://pardakht.cafebazaar.ir/devapi/v2/api/validate/" + \
           "com.ElmoGame.Farmuler/inapp/" + str(product_id) + "/purchases/" + \
           str(purchase_token) + "/?access_token={access_token}" \
               .format(access_token=bazzar_access_token)
-    r = requests.get(url, verify=False)
-    return_json = json.loads(r.text)
+    '''
+
+    while True:
+        bazzar_access_token = cafebazaar_refresh_auth()
+        url = "https://pardakht.cafebazaar.ir/devapi/v2/api/validate/" + \
+          "com.ElmoGame.Farmuler/inapp/" + str(product_id) + "/purchases/" + \
+          str(purchase_token) + "/?access_token={access_token}" \
+              .format(access_token=bazzar_access_token)
+        r = requests.get(url, verify=False)
+        return_json = json.loads(r.text)
+        if(return_json.get('error') != 'invalid_credentials'):
+            break
+
+    #r = requests.get(url, verify=False)
+    #return_json = json.loads(r.text)
+
+
+
     print("Cafe Answer ", return_json)
     result = r.status_code == 200 and return_json.get('error') is None
     return result
