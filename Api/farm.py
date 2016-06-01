@@ -994,17 +994,9 @@ def get_score_v1(offset):
     abort(404)
 
 
-x = 0
 @app.route('/v1/validate_transaction', methods=['POST'])
 @hm.check_hmac
 def v1_validate_transaction():
-    global x
-    x += 1
-    if(x <3):
-        #from time import sleep
-        #sleep(10)
-        return #jsonify({"status": False})
-    x = 0
     product_id = request.json["product_id"]
     purchase_token = request.json["purchase_token"]
     request_validate = cafebazaar_send_validation_request(product_id, purchase_token)
