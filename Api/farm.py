@@ -424,6 +424,14 @@ def client_logs():
     if request.json.get("log"):
         log = request.json.get("log")
         print("Client Log", log)
+        token = request.json.get('token')
+        if token:
+            transaction = db_session.query(Transaction).filter_by(token=token).first()
+            if transaction:
+                transaction.complete = True
+                db_session.commit()
+            else:
+                print("Complete Purchase in with failed transaction ", token)
     response = jsonify({'status': '200'})
     response.status_code = 200
     return response

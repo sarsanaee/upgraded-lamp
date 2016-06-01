@@ -163,7 +163,9 @@ class Transaction(Base):
     price = sqlalchemy.Column(sqlalchemy.Integer)
     token = sqlalchemy.Column(sqlalchemy.String)
     product_id = sqlalchemy.Column(sqlalchemy.String)
+    complete = sqlalchemy.Column(sqlalchemy.Boolean)
     user_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey('users.id'))
+
 
     # def __init__(self, id, discount, diamond, price):
     def __init__(self, id=None, discount=None, diamond=None, price=None, token=None, product_id=None):
