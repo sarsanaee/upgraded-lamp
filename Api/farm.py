@@ -153,7 +153,7 @@ def daily_reward(id):
     if retrieved_user:
         b = datetime.datetime.now()
         delta = b - retrieved_user.last_daily_reward_date
-        if delta.total_seconds() > 7199:
+        if delta.total_seconds() > app.config["DAILY"]:
             retrieved_user.last_daily_reward_date = datetime.datetime.now()
             db_session.commit()
             response = jsonify({"status": "Ok"})
