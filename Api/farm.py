@@ -1001,9 +1001,9 @@ def v1_validate_transaction():
     global x
     x += 1
     if(x <3):
-        from time import sleep
-        sleep(10)
-        return jsonify({"test":"test"})
+        #from time import sleep
+        #sleep(10)
+        return #jsonify({"status": False})
     x = 0
     product_id = request.json["product_id"]
     purchase_token = request.json["purchase_token"]
