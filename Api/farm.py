@@ -1135,6 +1135,7 @@ def cafebazaar_send_validation_request(product_id, purchase_token):
               .format(access_token=bazzar_access_token)
         r = requests.get(url, verify=False)
         return_json = json.loads(r.text)
+        print("Cafe Answer ", return_json)
         if(return_json.get('error') != 'invalid_credentials'):
             break
 
@@ -1143,7 +1144,6 @@ def cafebazaar_send_validation_request(product_id, purchase_token):
 
 
 
-    print("Cafe Answer ", return_json)
     result = r.status_code == 200 and return_json.get('error') is None
     return result
 
