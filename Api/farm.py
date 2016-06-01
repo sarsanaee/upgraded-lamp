@@ -1003,7 +1003,7 @@ def v1_validate_transaction():
     if(x <3):
         from time import sleep
         sleep(10)
-        return jsonify({"test":"test"}
+        return jsonify({"test":"test"})
     product_id = request.json["product_id"]
     purchase_token = request.json["purchase_token"]
     request_validate = cafebazaar_send_validation_request(product_id, purchase_token)
