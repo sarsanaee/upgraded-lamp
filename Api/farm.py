@@ -215,7 +215,7 @@ def daily_reward_price(id):
 def get_username_info():
     retrieved_user = User.query.filter_by(username=request.json["username"]).first()
     if retrieved_user:
-        response = jsonify({'username':retrieved_user.username, 'id': retrieved_user.id, 'password': retrieved_user.password, 'email': retrieved_user.email})
+        response = jsonify({'username':retrieved_user.username ,'id': retrieved_user.id, 'password': retrieved_user.password, 'email': retrieved_user.email})
         response.status_code = 200
         return response
     abort(404)
