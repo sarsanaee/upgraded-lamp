@@ -112,9 +112,9 @@ class User(Base):
         self.email = email
         self.password = password
 
-    # def __repr__(self):
-    #     return self.username if all(ord(c) < 128 for c in self.username) else self.username[::-1]
-    #
+    def __repr__(self):
+         return self.username if all(ord(c) < 128 for c in self.username) else self.username[::-1]
+
     def __unicode__(self):
         return self.username
 
@@ -384,6 +384,7 @@ class GameDb(Base):
 
     def __unicode__(self):
         return self.username
+
 
 
 class Special_Packages(Base):
