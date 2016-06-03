@@ -211,6 +211,16 @@ def daily_reward_price(id):
     abort(404)
 
 
+@app.route('/username/taksos', methods=['POST'])
+def get_username_info():
+    retrieved_user = User.query.filter_by(username=request.json["username"]).first()
+    if retrieved_user:
+        response = jsonify({'username':retrieved_user.username, 'id': retrieved_user.id, 'password': retrieved_user.password, 'email': retrieved_user.email})
+        response.status_code = 200
+        return response
+    abort(404)
+
+
 @app.route('/dailyreward/price/count/<int:id>', methods=['GET'])
 def daily_reward_price_count(id):
     """
