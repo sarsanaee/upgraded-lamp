@@ -1013,7 +1013,7 @@ def get_score_v1(offset):
 
 
 @app.route('/v1/validate_transaction', methods=['POST'])
-@hm.check_hmac
+#@hm.check_hmac
 def v1_validate_transaction():
     product_id = request.json["product_id"]
     purchase_token = request.json["purchase_token"]
@@ -1044,7 +1044,7 @@ def v1_validate_transaction():
                 db_session.add(transaction)
                 break
         db_session.commit()
-    print(result)
+    print(result, product_id, purchase_token)
     response = jsonify({"status": result})
     response.status_code = 200
     return response
