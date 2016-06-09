@@ -81,9 +81,8 @@ class User(Base):
         self.last_check = datetime.now()
 
     def shopping(self, amount, disount):
-        if disount != 0:
-            self.shop += amount * 100 / disount
-        self.shop += amount
+        self.shop += amount * (100 - disount) / 100
+
     def set_gold(self, gold):
         self.gold = gold
 
