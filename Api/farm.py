@@ -1023,11 +1023,15 @@ def v1_validate_transaction():
     if result:
         store_product_ids = db_session.query(Store.product_id).all()
         special_packages_product_ids = db_session.query(Special_Packages.product_id).all()
+        user = db_session.query(User).filter_by(id=request.json.get("id")).first()
         for i in store_product_ids:
             if product_id in i:
                 store = Store.query.filter_by(product_id=product_id).first()
                 transaction = Transaction(request.json.get("id"), store.discount, store.diamond, store.price,
                                           purchase_token, product_id)
+
+                if user:
+                    user.shopping(store.price, store.discount)
                 db_session.add(transaction)
                 break
         for i in special_packages_product_ids:
@@ -1035,6 +1039,8 @@ def v1_validate_transaction():
                 special_packages = Special_Packages.query.filter_by(product_id=product_id).first()
                 transaction = Transaction(request.json.get("id"), special_packages.discount, special_packages.diamond,
                                           special_packages.price, purchase_token, product_id)
+                if user:
+                    user.shopping(special_packages.price, special_packages.discount)
                 db_session.add(transaction)
                 break
         db_session.commit()

@@ -80,8 +80,8 @@ class User(Base):
     def recent_access_time(self):
         self.last_check = datetime.now()
 
-    def shopping(self, amount):
-        self.shop = self.shop + amount
+    def shopping(self, amount, disount):
+        self.shop += amount * 100 / disount
 
     def set_gold(self, gold):
         self.gold = gold
