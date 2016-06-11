@@ -264,6 +264,10 @@ class GameDb(Base):
     FactoryBuy = sqlalchemy.Column(sqlalchemy.Unicode,
                                    default='FTFFFFFFFFFFFFFFFFFFFFF',
                                    nullable=True)
+    ActiveSex = sqlalchemy.Column(sqlalchemy.Integer, default=0, nullable=True)
+    WomanCharecters =  sqlalchemy.Column(sqlalchemy.Unicode,
+                                   default="",
+                                   nullable=True)
     user_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey('users.id'))
 
 
@@ -323,6 +327,8 @@ class GameDb(Base):
             self.MapTutorial_Online = json["MapTutorial_Online"]
             self.MainMenuTutorial_Online = json["MainMenuTutorial_Online"]
             self.FactoryBuy = json["FactoryBuy"]
+            self.ActiveSex = json["ActiveSex"]
+            self.WomanCharecters = json["WomanCharecters"]
         else:
             self.user_id = user_id
 
@@ -379,7 +385,9 @@ class GameDb(Base):
             "LevelTutorial_Online": self.LevelTutorial_Online,
             "MapTutorial_Online": self.MapTutorial_Online,
             "MainMenuTutorial_Online": self.MainMenuTutorial_Online,
-            "FactoryBuy": self.FactoryBuy
+            "FactoryBuy": self.FactoryBuy,
+            "ActiveSex": self.ActiveSex,
+            "WomanCharecters": self.WomanCharecters
         }
 
     def __unicode__(self):

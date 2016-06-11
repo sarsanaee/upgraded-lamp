@@ -400,6 +400,16 @@ def datacorrector():
     db_session.commit()
     return "finished"
 
+@app.route('/V2/gamedbcorrector', methods=['GET'])
+def gamedbcorrector():
+    gamedb = GameDb.query.all()
+    for i in gamedb:
+        i.ActiveSex = 0
+        i.WomanCharecters = ""
+    db_session.commit()
+    return "finished"
+
+
 
 @app.route('/version', methods=['GET'])
 def get_last_version():
@@ -462,7 +472,7 @@ def get_player_db(id):
 def set_player_all_db():
     gamedb = GameDb.query.filter_by(user_id=request.json["id"]).first()
     if gamedb:
-        gamedb.update_data(request.json)
+        gamedb.update_data(gameDbJsonScheme.add_diff_keys(request.json))
         db_session.commit()
         response = jsonify({"status": "updated"})
         response.status_code = 200

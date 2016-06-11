@@ -17,7 +17,17 @@ class gameDbJsonScheme():
         "id": "user_id",
     }
 
+    keys_to_add = {"ActiveSex": 0,
+                   "WomanCharecters": ""}
+
     def get_correspond(self, key):
         if key in self.storage:
             return self.storage[key]
         return key
+
+    def add_diff_keys(self,json):
+        for i in self.keys_to_add.keys():
+            if i not in json:
+                json[i] = self.keys_to_add[i]
+        return json
+
