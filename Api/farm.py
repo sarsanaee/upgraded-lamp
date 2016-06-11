@@ -391,12 +391,15 @@ def level_creator():
 @app.route('/V2/datacorrector', methods=['GET'])
 def datacorrector():
     users = User.query.all()
+    #print(users)
     for i in users:
-        i.is_banned = False
-        i.wins = 0
-        i.last_daily_reward_date = datetime.datetime.now()
-        i.daily_reward_with_price_count = 0
-        i.daily_reward_with_price_date = datetime.datetime.now()
+        #print(i.lose)
+        #i.is_banned = False
+        #i.wins = 0
+        i.lose = 0
+        #i.last_daily_reward_date = datetime.datetime.now()
+        #i.daily_reward_with_price_count = 0
+        #i.daily_reward_with_price_date = datetime.datetime.now()
     db_session.commit()
     return "finished"
 
@@ -815,9 +818,13 @@ def wins_number(id):
 
 @app.route('/wins/taksossharamje', methods=['POST'])
 def win_game():
-    retrieved_user = User.query.filter_by(username=request.json["winner"]).first()
-    if retrieved_user:
-        retrieved_user.win()
+    retrieved_user_winner = User.query.filter_by(username=request.json["winner"]).first()
+    retrieved_user_looser = User.query.filter_by(username=request.json["looser"]).first()
+    print(retrieved_user_looser.username)
+    print(retrieved_user_winner.username)
+    if retrieved_user_winner and retrieved_user_looser:
+        retrieved_user_winner.win()
+        retrieved_user_looser.lose_game()
         db_session.commit()
         response = jsonify({"status": "Ok"})
         response.status_code = 201

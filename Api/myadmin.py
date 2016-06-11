@@ -102,6 +102,7 @@ class UserView(ModelView):
                     'chars_bought',
                     'is_banned',
                     'wins',
+                    'lose',
                     'last_daily_reward_date',
                     'daily_reward_with_price_count',
                     'daily_reward_with_price_date')

@@ -53,6 +53,8 @@ class User(Base):
     last_daily_reward_date = sqlalchemy.Column(sqlalchemy.DateTime)
     daily_reward_with_price_count = sqlalchemy.Column(sqlalchemy.Integer, default=0)
     daily_reward_with_price_date = sqlalchemy.Column(sqlalchemy.DateTime, default=datetime.now())
+    lose = sqlalchemy.Column(sqlalchemy.Integer)
+
 
     status = relationship('Level', backref='users',
                           lazy='dynamic')
@@ -74,6 +76,7 @@ class User(Base):
         self.score = (59 * 60 + 59) * 120
         self.chars_bought = 0
         self.wins = 0
+        self.lose = 0
         self.is_banned = False
         self.last_daily_reward_date = datetime.now() - timedelta(hours=4)
 
@@ -107,6 +110,12 @@ class User(Base):
             self.wins += 1
         else:
             self.wins = 1
+
+    def lose_game(self):
+        if self.lose is not None:
+            self.lose += 1
+        else:
+            self.lose = 1
 
     def update_profile(self, email, password):
         self.email = email
