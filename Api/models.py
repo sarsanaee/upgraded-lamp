@@ -2,6 +2,8 @@ from datetime import datetime, timedelta
 
 import sqlalchemy
 from sqlalchemy.orm import relationship
+from bidi import algorithm
+
 
 from Api.database import Base
 
@@ -122,10 +124,10 @@ class User(Base):
         self.password = password
 
     def __repr__(self):
-         return self.username if all(ord(c) < 128 for c in self.username) else self.username[::-1]
+        return algorithm.get_display(self.username)#self.username if all(ord(c) < 128 for c in self.username) else self.username[::-1]
 
     def __unicode__(self):
-        return self.username
+        return algorithm.get_display(self.username)
 
 
 class Level(Base):

@@ -11,3 +11,4 @@ uwsgitop
 alembic
 apidoc
 flask-cors
+python-bidi

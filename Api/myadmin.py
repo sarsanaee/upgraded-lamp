@@ -12,6 +12,8 @@ from Api.database import db_session
 from Api.models import AdminUsers
 import flask_login as login
 import flask_admin as admin
+from bidi import algorithm
+
 
 class ApiView(ModelView):
     def is_accessible(self):
@@ -68,7 +70,7 @@ class TransactionView(ModelView):
         'token'
     )
     page_size = 100
-
+    column_default_sort = ('date', True)
     form_excluded_columns = ['users',]
 
 
@@ -128,7 +130,8 @@ class UserView(ModelView):
     column_display_pk = True
     can_edit = True
 
-    column_formatters = dict(username=lambda v, c, m, p: m.username if all(ord(c) < 128 for c in m.username) else m.username[::-1])
+    column_formatters = dict(username=lambda v, c, m, p: algorithm.get_display(m.username))#if all(ord(c) < 128 for c in m.username) else m.username[::-1])
+
 
     def is_accessible(self):
         return login.current_user.is_authenticated()

@@ -820,8 +820,6 @@ def wins_number(id):
 def win_game():
     retrieved_user_winner = User.query.filter_by(username=request.json["winner"]).first()
     retrieved_user_looser = User.query.filter_by(username=request.json["looser"]).first()
-    print(retrieved_user_looser.username)
-    print(retrieved_user_winner.username)
     if retrieved_user_winner and retrieved_user_looser:
         retrieved_user_winner.win()
         retrieved_user_looser.lose_game()
