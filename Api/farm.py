@@ -475,7 +475,7 @@ def get_player_db(id):
 def set_player_all_db():
     gamedb = GameDb.query.filter_by(user_id=request.json["id"]).first()
     if gamedb:
-        gamedb.update_data(gameDbJsonScheme.add_diff_keys(request.json))
+        gamedb.update_data(gameDbSchemeConverter.add_diff_keys(request.json))
         db_session.commit()
         response = jsonify({"status": "updated"})
         response.status_code = 200
