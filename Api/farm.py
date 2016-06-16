@@ -771,7 +771,7 @@ def get_player_overall_rank(level):
 
 
 @app.route('/valid_giftcard', methods=['POST'])
-@hm.check_hmac
+#@hm.check_hmac
 def valid_giftcard():
     try:
         gift_code = int(request.json['gift_code'])
@@ -779,7 +779,7 @@ def valid_giftcard():
         abort(404)
     gift_ret = Giftcards.query.filter_by(code=gift_code).first()
     if gift_ret and gift_ret.validity:
-        if len(gift_ret.username) > 0:
+        if gift_ret.username:
             if gift_ret.username == request.json['username']:
                 gift_ret.count -= 1
                 if gift_ret.count == 0:
