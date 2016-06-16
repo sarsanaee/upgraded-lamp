@@ -779,11 +779,22 @@ def valid_giftcard():
         abort(404)
     gift_ret = Giftcards.query.filter_by(code=gift_code).first()
     if gift_ret and gift_ret.validity:
-        gift_ret.count -= 1
-        gift_ret.username = request.json['username']
-        if gift_ret.count == 0:
-            gift_ret.validity = 0
-        db_session.commit()
+        if gift_ret.username:
+            if gift_ret.username == request.json['username']:
+                gift_ret.count -= 1
+                if gift_ret.count == 0:
+                    gift_ret.validity = 0
+            else:
+                abort(403)
+        else:
+            gift_ret.count -= 1
+            gift_ret.username = request.json['username']
+            if gift_ret.count == 0:
+                gift_ret.validity = 0
+            db_session.commit()
+
+
+
         response = jsonify({"status": "200", 'count': gift_ret.diamond_count})
         response.status_code = 200
         return response

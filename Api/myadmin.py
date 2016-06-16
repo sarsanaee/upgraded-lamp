@@ -80,7 +80,7 @@ class TransactionView(ModelView):
 
 class GiftCardView(ModelView):
     form_base_class = flask_wtf.Form
-    form_columns = ('code', 'count', 'diamond_count')
+    form_columns = ('code', 'count', 'diamond_count', 'username')
     can_export = True
 
     column_formatters = dict(username=lambda v, c, m, p: algorithm.get_display(m.username) if m.username else "")
