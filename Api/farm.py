@@ -784,6 +784,8 @@ def valid_giftcard():
                 gift_ret.count -= 1
                 if gift_ret.count == 0:
                     gift_ret.validity = 0
+                db_session.commit()
+
             else:
                 abort(403)
         else:
@@ -791,9 +793,10 @@ def valid_giftcard():
             gift_ret.username = request.json['username']
             if gift_ret.count == 0:
                 gift_ret.validity = 0
+            db_session.commit()
 
 
-        db_session.commit()
+
         response = jsonify({"status": "200", 'count': gift_ret.diamond_count})
         response.status_code = 200
         return response
