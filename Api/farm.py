@@ -488,6 +488,16 @@ def set_player_all_db():
     return response
 
 
+@app.route('/collect_statistics', methods=['GET'])
+def collect_statistics():
+    users = User.query.filter_by().all()
+    for i in users:
+        i.periodic_win = i.wins
+    db_session.commit()
+    response = jsonify({"status": "updated"})
+    return response
+
+
 @app.route('/gamedb', methods=['POST'])
 @hm.check_hmac
 def set_player_db():

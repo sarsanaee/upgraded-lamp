@@ -56,6 +56,7 @@ class User(Base):
     daily_reward_with_price_count = sqlalchemy.Column(sqlalchemy.Integer, default=0)
     daily_reward_with_price_date = sqlalchemy.Column(sqlalchemy.DateTime, default=datetime.now())
     lose = sqlalchemy.Column(sqlalchemy.Integer)
+    periodic_win = sqlalchemy.Column(sqlalchemy.Integer)
 
 
     status = relationship('Level', backref='users',
@@ -79,6 +80,7 @@ class User(Base):
         self.chars_bought = 0
         self.wins = 0
         self.lose = 0
+        self.periodic_win = 0
         self.is_banned = False
         self.last_daily_reward_date = datetime.now() - timedelta(hours=4)
 
