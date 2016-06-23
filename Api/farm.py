@@ -1056,8 +1056,10 @@ def v1_validate_transaction():
     product_id = request.json["product_id"]
     purchase_token = request.json["purchase_token"]
     request_validate = cafebazaar_send_validation_request(product_id, purchase_token)
-    is_repeated_token = db_session.query(Transaction).filter_by(token=purchase_token).all()
-    result = request_validate and len(is_repeated_token) == 0
+    #is_repeated_token = db_session.query(Transaction).filter_by(token=purchase_token).all()
+    is_repeated_token = db_session.query(Transaction).filter_by(token=purchase_token).first()
+    #result = request_validate and len(is_repeated_token) == 0
+    result = request_validate and is_repeated_token and not is_repeated_token.compelete
     if result:
         store_product_ids = db_session.query(Store.product_id).all()
         special_packages_product_ids = db_session.query(Special_Packages.product_id).all()
