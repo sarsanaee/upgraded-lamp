@@ -1056,34 +1056,39 @@ def v1_validate_transaction():
     product_id = request.json["product_id"]
     purchase_token = request.json["purchase_token"]
     request_validate = cafebazaar_send_validation_request(product_id, purchase_token)
-    #is_repeated_token = db_session.query(Transaction).filter_by(token=purchase_token).all()
-    is_repeated_token = db_session.query(Transaction).filter_by(token=purchase_token).first()
-    #result = request_validate and len(is_repeated_token) == 0
-    result = request_validate and is_repeated_token and not is_repeated_token.compelete
+    result = request_validate# and is_repeated_token and not is_repeated_token.compelete
     if result:
-        store_product_ids = db_session.query(Store.product_id).all()
-        special_packages_product_ids = db_session.query(Special_Packages.product_id).all()
-        user = db_session.query(User).filter_by(id=request.json.get("id")).first()
-        for i in store_product_ids:
-            if product_id in i:
-                store = Store.query.filter_by(product_id=product_id).first()
-                transaction = Transaction(request.json.get("id"), store.discount, store.diamond, store.price,
-                                          purchase_token, product_id)
+        is_repeated_token = db_session.query(Transaction).filter_by(token=purchase_token).first()
+        if not is_repeated_token:
+            store_product_ids = db_session.query(Store.product_id).all()
+            special_packages_product_ids = db_session.query(Special_Packages.product_id).all()
+            user = db_session.query(User).filter_by(id=request.json.get("id")).first()
+            for i in store_product_ids:
+                if product_id in i:
+                    store = Store.query.filter_by(product_id=product_id).first()
+                    transaction = Transaction(request.json.get("id"), store.discount, store.diamond, store.price,
+                                              purchase_token, product_id)
 
-                if user:
-                    user.shopping(store.price, store.discount)
-                db_session.add(transaction)
-                break
-        for i in special_packages_product_ids:
-            if product_id in i:
-                special_packages = Special_Packages.query.filter_by(product_id=product_id).first()
-                transaction = Transaction(request.json.get("id"), special_packages.discount, special_packages.diamond,
-                                          special_packages.price, purchase_token, product_id)
-                if user:
-                    user.shopping(special_packages.price, special_packages.discount)
-                db_session.add(transaction)
-                break
-        db_session.commit()
+                    if user:
+                        user.shopping(store.price, store.discount)
+                    db_session.add(transaction)
+                    break
+            for i in special_packages_product_ids:
+                if product_id in i:
+                    special_packages = Special_Packages.query.filter_by(product_id=product_id).first()
+                    transaction = Transaction(request.json.get("id"), special_packages.discount, special_packages.diamond,
+                                              special_packages.price, purchase_token, product_id)
+                    if user:
+                        user.shopping(special_packages.price, special_packages.discount)
+                    db_session.add(transaction)
+                    break
+            db_session.commit()
+        else:
+            if is_repeated_token.complete:
+                result = False
+            else:
+                result = True
+
     print(result, product_id, purchase_token)
     response = jsonify({"status": result})
     response.status_code = 200
