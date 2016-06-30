@@ -1055,8 +1055,12 @@ def get_score_v1(offset):
 def v1_validate_transaction():
     product_id = request.json["product_id"]
     purchase_token = request.json["purchase_token"]
-    request_validate = cafebazaar_send_validation_request(product_id, purchase_token)
-    result = request_validate# and is_repeated_token and not is_repeated_token.compelete
+    #request_validate = cafebazaar_send_validation_request(product_id, purchase_token)
+    if(request.json['store_id'] == 1):
+        request_validate = myket_send_validation_request(product_id, purchase_token)
+    else:
+        request_validate = cafebazaar_send_validation_request(product_id, purchase_token)
+    result = request_validate
     if result:
         is_repeated_token = db_session.query(Transaction).filter_by(token=purchase_token).first()
         if not is_repeated_token:
@@ -1093,70 +1097,6 @@ def v1_validate_transaction():
     response = jsonify({"status": result})
     response.status_code = 200
     return response
-
-
-@app.route('/validate_transaction', methods=['POST'])
-@hm.check_hmac
-def v0_validation():
-    try:
-        product_id = request.json["product_id"]
-        purchase_token = request.json["purchase_token"]
-        print("token Rec", product_id, purchase_token)
-        id = None
-        if request.json.get("id"):
-            if request.json.get("id").isdigit():
-                id = int(request.json.get("id"))
-        request_validate = -1
-        for i in range(3):
-            request_validate = cafebazaar_send_validation_request(product_id, purchase_token)
-            if request_validate != -1:
-                break
-
-        if request_validate:
-            if packages.has_key(product_id):
-                store = Store.query.filter_by(number=packages[product_id]).first()
-                retrieved_user = None
-                if id:
-                    retrieved_user = User.query.filter_by(id=id).first()
-                    if not retrieved_user:
-                        retrieved_user = User.query.filter_by(username="aghaxoo").first()
-
-                else:
-                    retrieved_user = User.query.filter_by(username="aghaxoo").first()
-
-                if retrieved_user:
-                    retrieved_user.shopping(store.price)
-                    retrieved_user.recent_access_time()
-                    diamond = store.diamond
-                    retrieved_user.buy_gold_diamond(diamond)
-                    transaction = Transaction(retrieved_user.id, store.discount, diamond, store.price, purchase_token,
-                                              product_id)
-                    db_session.add(transaction)
-                    db_session.commit()
-            else:
-                retrieved_user = None
-                if id:
-                    retrieved_user = User.query.filter_by(id=id).first()
-
-                else:
-                    retrieved_user = User.query.filter_by(username="aghaxoo").first()
-
-                if retrieved_user:
-                    retrieved_user.shopping(25000)
-                    retrieved_user.recent_access_time()
-                    diamond = 0
-                    retrieved_user.buy_gold_diamond(diamond)
-                    transaction = Transaction(retrieved_user.id, 0, diamond, 25000, purchase_token, product_id)
-                    db_session.add(transaction)
-                    db_session.commit()
-        response = jsonify({"status": request_validate})
-        response.status_code = 200
-        return response
-
-    except:
-        print("database insertion broken")
-        abort(500)
-
 
 @app.route('/')
 def index():
@@ -1208,6 +1148,17 @@ def cafebazaar_send_validation_request(product_id, purchase_token):
     result = r.status_code == 200 and return_json.get('error') is None
     return result
 
+def myket_send_validation_request(product_id, purchase_token):
+    url = app.config["MYKET_URL"].format("com.ElmoGame.Farmuler", product_id, purchase_token)
+    r = requests.get(url, verify=False)
+    iteration = 0
+    while(r.status_code != 200 and iteration < 3):
+        r = requests.get(url, verify=False)
+        iteration += 1
+    #return_json = json.loads(r.text)
+    print("Myket Answer ", r.text)
+    result = r.status_code == 200#return_json.get('purchaseState') == 0
+    return result
 
 '''
 if __name__ == '__main__':
