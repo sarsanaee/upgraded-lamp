@@ -6,3 +6,4 @@ HOST = '0.0.0.0'
 PORT = 6789
 DAILY = 3599
 MYKET_URL = 'https://api.myket.ir/IapService.svc/getpurchases?packagename={}&productId={}&token={}'
+MYKET_ID = 1
