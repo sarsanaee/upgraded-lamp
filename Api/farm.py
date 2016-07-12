@@ -1052,7 +1052,7 @@ def get_score_v1(offset):
 
 @app.route('/collect_logs', methods=['GET'])
 def collect_logs():
-    os.system(app.config['log_collector'])
+    os.system(app.config['LOG_COLLECTOR_PATH'])
     return 'Logs are ready :) <a href="http://5.61.24.119:3242/">Get me to COLLECTED LOGS!</a>', 200
 
 @app.route('/v1/validate_transaction', methods=['POST'])
