@@ -5,6 +5,6 @@ count=`ls -l | grep -v ^l | wc -l`
 file=farm_uwsgi.log.${count}
 cat farm_uwsgi.log > ${file}
 gzip ${file}
-mv /var/www/data/${file}.gz latest_log.gz
+mv /var/www/upgraded-lamp/${file}.gz latest_log.gz
 cp latest_log.gz /var/www/data
 truncate -s 0 farm_uwsgi.log
