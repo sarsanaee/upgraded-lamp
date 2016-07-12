@@ -216,7 +216,9 @@ def daily_reward_price(id):
 def get_username_info():
     retrieved_user = User.query.filter_by(username=request.json["username"]).first()
     if retrieved_user:
-        response = jsonify({'username':retrieved_user.username ,'id': retrieved_user.id, 'password': retrieved_user.password, 'email': retrieved_user.email})
+        response = jsonify(
+            {'username': retrieved_user.username, 'id': retrieved_user.id, 'password': retrieved_user.password,
+             'email': retrieved_user.email})
         response.status_code = 200
         return response
     abort(404)
@@ -392,17 +394,18 @@ def level_creator():
 @app.route('/V2/datacorrector', methods=['GET'])
 def datacorrector():
     users = User.query.all()
-    #print(users)
+    # print(users)
     for i in users:
-        #print(i.lose)
-        #i.is_banned = False
-        #i.wins = 0
+        # print(i.lose)
+        # i.is_banned = False
+        # i.wins = 0
         i.lose = 0
-        #i.last_daily_reward_date = datetime.datetime.now()
-        #i.daily_reward_with_price_count = 0
-        #i.daily_reward_with_price_date = datetime.datetime.now()
+        # i.last_daily_reward_date = datetime.datetime.now()
+        # i.daily_reward_with_price_count = 0
+        # i.daily_reward_with_price_date = datetime.datetime.now()
     db_session.commit()
     return "finished"
+
 
 @app.route('/V2/gamedbcorrector', methods=['GET'])
 def gamedbcorrector():
@@ -412,7 +415,6 @@ def gamedbcorrector():
         i.WomanCharecters = ""
     db_session.commit()
     return "finished"
-
 
 
 @app.route('/version', methods=['GET'])
@@ -772,7 +774,7 @@ def get_player_overall_rank(level):
 
 
 @app.route('/valid_giftcard', methods=['POST'])
-#@hm.check_hmac
+# @hm.check_hmac
 def valid_giftcard():
     try:
         gift_code = int(request.json['gift_code'])
@@ -795,8 +797,6 @@ def valid_giftcard():
             if gift_ret.count == 0:
                 gift_ret.validity = 0
             db_session.commit()
-
-
 
         response = jsonify({"status": "200", 'count': gift_ret.diamond_count})
         response.status_code = 200
@@ -1041,7 +1041,6 @@ def get_score_v1(offset):
             usernames_list.append(temp_username)
             scores_list.append(431880 - player[i].score)
 
-
         # converted_usernames_list = json.dumps(usernames_list)#, ensure_ascii=False)
         response = jsonify({'status': '200', 'username': usernames_list,  # converted_usernames_list,
                             'scores': scores_list,
@@ -1050,10 +1049,12 @@ def get_score_v1(offset):
         return response
     abort(404)
 
+
 @app.route('/collect_logs', methods=['GET'])
 def collect_logs():
     os.system(app.config['LOG_COLLECTOR_PATH'])
     return 'Logs are ready :) <a href="http://5.61.24.119:3242/">Get me to COLLECTED LOGS!</a>', 200
+
 
 @app.route('/v1/validate_transaction', methods=['POST'])
 @hm.check_hmac
@@ -1061,8 +1062,8 @@ def v1_validate_transaction():
     print(request.json)
     product_id = request.json["product_id"]
     purchase_token = request.json["purchase_token"]
-    #request_validate = cafebazaar_send_validation_request(product_id, purchase_token)
-    if(request.json['store_id'] == app.config["MYKET_ID"]):
+    # request_validate = cafebazaar_send_validation_request(product_id, purchase_token)
+    if (request.json['store_id'] == app.config["MYKET_ID"]):
         request_validate = myket_send_validation_request(product_id, purchase_token)
     else:
         request_validate = cafebazaar_send_validation_request(product_id, purchase_token)
@@ -1086,7 +1087,8 @@ def v1_validate_transaction():
             for i in special_packages_product_ids:
                 if product_id in i:
                     special_packages = Special_Packages.query.filter_by(product_id=product_id).first()
-                    transaction = Transaction(request.json.get("id"), special_packages.discount, special_packages.diamond,
+                    transaction = Transaction(request.json.get("id"), special_packages.discount,
+                                              special_packages.diamond,
                                               special_packages.price, purchase_token, product_id)
                     if user:
                         user.shopping(special_packages.price, special_packages.discount)
@@ -1103,6 +1105,7 @@ def v1_validate_transaction():
     response = jsonify({"status": result})
     response.status_code = 200
     return response
+
 
 @app.route('/')
 def index():
@@ -1137,34 +1140,36 @@ def cafebazaar_send_validation_request(product_id, purchase_token):
     while True:
         bazzar_access_token = cafebazaar_refresh_auth()
         url = "https://pardakht.cafebazaar.ir/devapi/v2/api/validate/" + \
-          "com.ElmoGame.Farmuler/inapp/" + str(product_id) + "/purchases/" + \
-          str(purchase_token) + "/?access_token={access_token}" \
-              .format(access_token=bazzar_access_token)
+              "com.ElmoGame.Farmuler/inapp/" + str(product_id) + "/purchases/" + \
+              str(purchase_token) + "/?access_token={access_token}" \
+                  .format(access_token=bazzar_access_token)
         r = requests.get(url, verify=False)
         return_json = json.loads(r.text)
         print("Cafe Answer ", return_json)
-        if(return_json.get('error') != 'invalid_credentials'):
+        if (return_json.get('error') != 'invalid_credentials'):
             break
 
-    #r = requests.get(url, verify=False)
-    #return_json = json.loads(r.text)
+    # r = requests.get(url, verify=False)
+    # return_json = json.loads(r.text)
 
 
 
     result = r.status_code == 200 and return_json.get('error') is None
     return result
 
+
 def myket_send_validation_request(product_id, purchase_token):
     url = app.config["MYKET_URL"].format("com.ElmoGame.Farmuler", product_id, purchase_token)
     r = requests.get(url, verify=False)
     iteration = 0
-    while(r.status_code != 200 and iteration < 3):
+    while (r.status_code != 200 and iteration < 3):
         r = requests.get(url, verify=False)
         iteration += 1
-    #return_json = json.loads(r.text)
+    # return_json = json.loads(r.text)
     print("Myket Answer ", r.text)
-    result = r.status_code == 200#return_json.get('purchaseState') == 0
+    result = r.status_code == 200  # return_json.get('purchaseState') == 0
     return result
+
 
 '''
 if __name__ == '__main__':
