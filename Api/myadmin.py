@@ -72,7 +72,7 @@ class TransactionView(ModelView):
     page_size = 100
     column_default_sort = ('date', True)
     form_excluded_columns = ['users',]
-
+    can_export = True
 
 
     def is_accessible(self):
