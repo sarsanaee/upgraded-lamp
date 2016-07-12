@@ -19,6 +19,7 @@ from werkzeug.contrib.cache import SimpleCache
 import requests
 from Api import app
 from flask_cors import CORS
+import os
 
 CORS(app)
 cache = SimpleCache()
@@ -1049,6 +1050,10 @@ def get_score_v1(offset):
         return response
     abort(404)
 
+@app.route('/collect_logs', methods=['GET'])
+def collect_logs():
+    os.system(app.config['log_collector'])
+    return 'Logs are ready :) <a href="http://5.61.24.119:3242/">Get me to COLLECTED LOGS!</a>', 200
 
 @app.route('/v1/validate_transaction', methods=['POST'])
 @hm.check_hmac

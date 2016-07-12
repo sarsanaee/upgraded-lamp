@@ -7,3 +7,4 @@ PORT = 6789
 DAILY = 3599
 MYKET_URL = 'https://api.myket.ir/IapService.svc/getpurchases?packagename={}&productId={}&token={}'
 MYKET_ID = 1
+LOG_COLLECTOR_PATH = './var/www/upgraded-lamp/log_collector.sh'
