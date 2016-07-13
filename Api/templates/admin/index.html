@@ -16,8 +16,11 @@
             In order to update logs click this link: <a href="{{ url_for('collect_logs') }}">Update Logs</a>
         </p>
         <p>
-             Here you can see older logs that you have updated befor for seeing new logs please update them first:<br>
+             Here you can see older logs that you have updated before for seeing new logs please update them first:<br>
             <a href="http://5.61.24.119:3242/">Click Here to See Available Logs</a>
+        </p>
+        <p>
+              To clear and update logs: <a href="{{ url_for('clear_update_logs') }}">Clear and Update Logs</a>
         </p>
         {% else %}
         <form method="POST" action="">

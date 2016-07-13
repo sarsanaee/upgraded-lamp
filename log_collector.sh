@@ -7,4 +7,6 @@ cat farm_uwsgi.log > ${file}
 gzip ${file}
 mv ${file}.gz latest_log.gz
 cp latest_log.gz /var/www/data
-#truncate -s 0 farm_uwsgi.log
+if [$1 == truncate]; then
+truncate -s 0 farm_uwsgi.log
+fi

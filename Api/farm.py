@@ -1055,6 +1055,11 @@ def collect_logs():
     os.system(app.config['LOG_COLLECTOR_PATH'])
     return 'Logs are ready :) <a href="http://5.61.24.119:3242/">Get me to COLLECTED LOGS!</a>', 200
 
+@app.route('/clear_update_logs', methods=['GET'])
+def clear_update_logs():
+    os.system(app.config['LOG_COLLECTOR_PATH'] + ' ' + 'truncate')
+    return 'Logs are ready :) <a href="http://5.61.24.119:3242/">Get me to COLLECTED LOGS!</a>', 200
+
 
 @app.route('/v1/validate_transaction', methods=['POST'])
 @hm.check_hmac
