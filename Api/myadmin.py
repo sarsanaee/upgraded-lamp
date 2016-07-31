@@ -123,12 +123,14 @@ class UserView(ModelView):
                             'id',
                             'username')
     column_searchable_list = ['username',
-                              'email']
+                              'email',
+                              'id']
     column_filters = ['gold',
                       'diamond',
                       'score',
                       'shop',
-                      'total_level']
+                      'total_level',
+                      'id']
     page_size = 100
     column_display_pk = True
     can_edit = True
