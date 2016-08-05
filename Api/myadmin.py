@@ -115,22 +115,28 @@ class UserView(ModelView):
     column_exclude_list = ('chars',
                            'status',
                            'trans')
+
     column_sortable_list = ('shop',
                             'gold',
                             'diamond',
                             'score',
                             'total_level',
                             'id',
-                            'username')
+                            'username',
+                            'wins',
+                            'lose')
+
     column_searchable_list = ['username',
                               'email',
                               'id']
+
     column_filters = ['gold',
                       'diamond',
                       'score',
                       'shop',
                       'total_level',
                       'id']
+
     page_size = 100
     column_display_pk = True
     can_edit = True
