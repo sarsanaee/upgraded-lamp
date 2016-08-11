@@ -1195,7 +1195,7 @@ def iran_apps_validation_request(product_id, purchase_token):
 
         url = "http://api.iranapps.ir/v2/applications/" + \
               "com.ElmoGame.Farmuler" + "/purchases/products/" + str(product_id) + "/tokens/" + \
-              str(purchase_token) + "/?access_token={access_token}" \
+              str(purchase_token) + "?access_token={access_token}" \
                   .format(access_token=bazzar_access_token)
 
         app.logger.warning(url)
