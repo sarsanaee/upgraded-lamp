@@ -1,0 +1,25 @@
+
+
+
+
+
+
+[2016-08-11 16:56:14,714] {/home/alireza/coding/FarmProjects/upgraded-lamp/runserver.py:28} ERROR - An error occurred
+[2016-08-11 16:56:31,733] {/home/alireza/coding/FarmProjects/upgraded-lamp/runserver.py:28} ERROR - An error occurred
+[2016-08-11 16:56:31,733] {/home/alireza/coding/FarmProjects/upgraded-lamp/runserver.py:29} WARNING - A warning occurred (42 apples)
+[2016-08-11 16:56:34,874] {/home/alireza/coding/FarmProjects/upgraded-lamp/runserver.py:28} ERROR - An error occurred
+[2016-08-11 16:56:34,874] {/home/alireza/coding/FarmProjects/upgraded-lamp/runserver.py:29} WARNING - A warning occurred (42 apples)
+[2016-08-11 16:56:49,098] {/home/alireza/coding/FarmProjects/upgraded-lamp/runserver.py:28} ERROR - An error occurred
+[2016-08-11 16:56:49,098] {/home/alireza/coding/FarmProjects/upgraded-lamp/runserver.py:29} WARNING - A warning occurred (42 apples)
+[2016-08-11 16:56:56,501] {/home/alireza/coding/FarmProjects/upgraded-lamp/runserver.py:28} ERROR - An error occurred
+[2016-08-11 16:56:56,502] {/home/alireza/coding/FarmProjects/upgraded-lamp/runserver.py:29} WARNING - A warning occurred (42 apples)
+[2016-08-11 16:57:43,516] {/home/alireza/coding/FarmProjects/upgraded-lamp/runserver.py:28} ERROR - An error occurred
+[2016-08-11 16:57:43,516] {/home/alireza/coding/FarmProjects/upgraded-lamp/runserver.py:29} WARNING - A warning occurred (42 apples)
+[2016-08-11 16:57:43,516] {/home/alireza/coding/FarmProjects/upgraded-lamp/runserver.py:31} INFO - fuck
+[2016-08-11 16:57:43,995] {/home/alireza/coding/FarmProjects/upgraded-lamp/runserver.py:28} ERROR - An error occurred
+[2016-08-11 16:57:43,995] {/home/alireza/coding/FarmProjects/upgraded-lamp/runserver.py:29} WARNING - A warning occurred (42 apples)
+[2016-08-11 16:57:43,996] {/home/alireza/coding/FarmProjects/upgraded-lamp/runserver.py:31} INFO - fuck
+[2016-08-11 16:58:18,764] {/home/alireza/coding/FarmProjects/upgraded-lamp/runserver.py:28} ERROR - An error occurred
+[2016-08-11 16:58:18,764] {/home/alireza/coding/FarmProjects/upgraded-lamp/runserver.py:29} WARNING - A warning occurred (42 apples)
+[2016-08-11 16:58:20,034] {/home/alireza/coding/FarmProjects/upgraded-lamp/runserver.py:28} ERROR - An error occurred
+[2016-08-11 16:58:20,034] {/home/alireza/coding/FarmProjects/upgraded-lamp/runserver.py:29} WARNING - A warning occurred (42 apples)

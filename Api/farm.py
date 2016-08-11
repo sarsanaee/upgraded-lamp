@@ -446,7 +446,7 @@ def client_logs():
     if request.json.get("log"):
         log = request.json.get("log")
         #print("Client Log", log)
-        app.logger.info("Client Log", log)
+        app.logger.warning("Client Log", log)
         token = request.json.get('token')
         if token:
             transaction = db_session.query(Transaction).filter_by(token=token).first()
@@ -454,8 +454,7 @@ def client_logs():
                 transaction.complete = True
                 db_session.commit()
             else:
-                app.logger.info("Complete Purchase in with failed transaction ", token)
-                pass
+                app.logger.warning("Complete Purchase in with failed transaction ", token)
     response = jsonify({'status': '200'})
     response.status_code = 200
     return response
@@ -1062,7 +1061,7 @@ def clear_update_logs():
 @app.route('/v1/validate_transaction', methods=['POST'])
 @hm.check_hmac
 def v1_validate_transaction():
-    app.logger.info(request.json)
+    app.logger.warning(request.json)
     product_id = request.json["product_id"]
     purchase_token = request.json["purchase_token"]
     if (request.json['store_id'] == app.config["MYKET_ID"]):
@@ -1106,7 +1105,7 @@ def v1_validate_transaction():
             else:
                 result = True
 
-    app.logger.info(result, product_id, purchase_token)
+    app.logger.warning(result, product_id, purchase_token)
     response = jsonify({"status": result})
     response.status_code = 200
     return response
@@ -1141,7 +1140,7 @@ def iranapps_refresh_auth():
         'refresh_token': "G_OtA0PMK4gEqjVZzdloBCIzrZnRpF-0H3suCAgF"
     }, verify=False)
 
-    app.logger.info(json.loads(r.text))
+    app.logger.warning(json.loads(r.text))
 
     return json.loads(r.text)["access_token"]
 
@@ -1163,7 +1162,7 @@ def cafebazaar_send_validation_request(product_id, purchase_token):
                   .format(access_token=bazzar_access_token)
         r = requests.get(url, verify=False)
         return_json = json.loads(r.text)
-        app.logger.info("Cafe Answer ", return_json)
+        app.logger.warning("Cafe Answer ", return_json)
         if (return_json.get('error') != 'invalid_credentials'):
             break
 
@@ -1184,7 +1183,7 @@ def myket_send_validation_request(product_id, purchase_token):
         r = requests.get(url, verify=False)
         iteration += 1
     # return_json = json.loads(r.text)
-    app.logger.info("Myket Answer ", r.text)
+    app.logger.warning("Myket Answer ", r.text)
     result = r.status_code == 200  # return_json.get('purchaseState') == 0
     return result
 
@@ -1197,10 +1196,10 @@ def iran_apps_validation_request(product_id, purchase_token):
               str(purchase_token) + "/?access_token={access_token}" \
                   .format(access_token=bazzar_access_token)
 
-        app.logger.info(url)
+        app.logger.warning(url)
         r = requests.get(url, verify=False)
         return_json = json.loads(r.text)
-        app.logger.info("Iran Apps Answer ", return_json)
+        app.logger.warning("Iran Apps Answer ", return_json)
         if (return_json.get('error') != 'invalid_credentials'):
             break
 
