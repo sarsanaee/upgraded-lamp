@@ -7,4 +7,10 @@ PORT = 6789
 DAILY = 3599
 MYKET_URL = 'https://api.myket.ir/IapService.svc/getpurchases?packagename={}&productId={}&token={}'
 MYKET_ID = 1
+IRANAPPS_ID = 2
 LOG_COLLECTOR_PATH = '/var/www/upgraded-lamp/log_collector.sh'
+LOG_FORMAT = "[%(asctime)s] {%(pathname)s:%(lineno)d} %(levelname)s - %(message)s"
+LOG_FILE_PATH = "/var/log/uwsgi/upgraded-lamp/app.log"
+#LOG_FILE_PATH = "app_log.txt"
+LOG_MAX_BYTE = 10000000
+BACKUP_COUNT = 5

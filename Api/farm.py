@@ -49,10 +49,6 @@ def init_login():
 
 init_login()
 
-# it has to be deleted until special amount of time because it is bas for project structure
-packages = {"Diamonds_G": 7, "Diamonds_F": 6, "Diamonds_E": 5, "Diamonds_D": 4, "Diamonds_C": 3, "Diamonds_B": 2,
-            "Diamonds_A": 1}
-
 admin = Admin(app, name='farm_web_service', index_view=MyAdminIndexView(), base_template='my_master.html')
 
 admin.add_view(UserView(User, db_session))
@@ -449,7 +445,8 @@ def get_last_version():
 def client_logs():
     if request.json.get("log"):
         log = request.json.get("log")
-        print("Client Log", log)
+        #print("Client Log", log)
+        app.logger.info("Client Log", log)
         token = request.json.get('token')
         if token:
             transaction = db_session.query(Transaction).filter_by(token=token).first()
@@ -457,7 +454,8 @@ def client_logs():
                 transaction.complete = True
                 db_session.commit()
             else:
-                print("Complete Purchase in with failed transaction ", token)
+                app.logger.info("Complete Purchase in with failed transaction ", token)
+                pass
     response = jsonify({'status': '200'})
     response.status_code = 200
     return response
@@ -1064,14 +1062,16 @@ def clear_update_logs():
 @app.route('/v1/validate_transaction', methods=['POST'])
 @hm.check_hmac
 def v1_validate_transaction():
-    print(request.json)
+    app.logger.info(request.json)
     product_id = request.json["product_id"]
     purchase_token = request.json["purchase_token"]
-    # request_validate = cafebazaar_send_validation_request(product_id, purchase_token)
     if (request.json['store_id'] == app.config["MYKET_ID"]):
         request_validate = myket_send_validation_request(product_id, purchase_token)
+    elif request.json['store_id'] == app.config["IRANAPPS_ID"]:
+        request_validate = iran_apps_validation_request(product_id, purchase_token)
     else:
         request_validate = cafebazaar_send_validation_request(product_id, purchase_token)
+
     result = request_validate
     if result:
         is_repeated_token = db_session.query(Transaction).filter_by(token=purchase_token).first()
@@ -1106,7 +1106,7 @@ def v1_validate_transaction():
             else:
                 result = True
 
-    print(result, product_id, purchase_token)
+    app.logger.info(result, product_id, purchase_token)
     response = jsonify({"status": result})
     response.status_code = 200
     return response
@@ -1132,6 +1132,19 @@ def cafebazaar_refresh_auth():
     return json.loads(r.text)["access_token"]
 
 
+
+def iranapps_refresh_auth():
+    r = requests.post("http://api.iranapps.ir/v2/auth/token", data={
+        'grant_type': "refresh_token",
+        'client_id': "l4Kga7FDt2xnkqpC1JGstZJ-jOyPA6f1",
+        'client_secret': "2bHTuKFxTehIuaEJkLHR6au6GdEQVXAr",
+        'refresh_token': "G_OtA0PMK4gEqjVZzdloBCIzrZnRpF-0H3suCAgF"
+    }, verify=False)
+
+    app.logger.info(json.loads(r.text))
+
+    return json.loads(r.text)["access_token"]
+
 # @celery.task(name='req')
 def cafebazaar_send_validation_request(product_id, purchase_token):
     '''
@@ -1150,7 +1163,7 @@ def cafebazaar_send_validation_request(product_id, purchase_token):
                   .format(access_token=bazzar_access_token)
         r = requests.get(url, verify=False)
         return_json = json.loads(r.text)
-        print("Cafe Answer ", return_json)
+        app.logger.info("Cafe Answer ", return_json)
         if (return_json.get('error') != 'invalid_credentials'):
             break
 
@@ -1171,9 +1184,34 @@ def myket_send_validation_request(product_id, purchase_token):
         r = requests.get(url, verify=False)
         iteration += 1
     # return_json = json.loads(r.text)
-    print("Myket Answer ", r.text)
+    app.logger.info("Myket Answer ", r.text)
     result = r.status_code == 200  # return_json.get('purchaseState') == 0
     return result
+
+def iran_apps_validation_request(product_id, purchase_token):
+    while True:
+        bazzar_access_token = iranapps_refresh_auth()
+
+        url = "http://api.iranapps.ir/v2/applications/" + \
+              "com.ElmoGame.Farmuler"+"/purchases/products/" + str(product_id) + "/tokens/" + \
+              str(purchase_token) + "/?access_token={access_token}" \
+                  .format(access_token=bazzar_access_token)
+
+        app.logger.info(url)
+        r = requests.get(url, verify=False)
+        return_json = json.loads(r.text)
+        app.logger.info("Iran Apps Answer ", return_json)
+        if (return_json.get('error') != 'invalid_credentials'):
+            break
+
+    # r = requests.get(url, verify=False)
+    # return_json = json.loads(r.text)
+
+
+
+    result = r.status_code == 200 and return_json.get('error') is None
+    return result
+
 
 
 '''
