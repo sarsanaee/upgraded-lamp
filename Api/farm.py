@@ -1163,7 +1163,7 @@ def cafebazaar_send_validation_request(product_id, purchase_token):
                   .format(access_token=bazzar_access_token)
         r = requests.get(url, verify=False)
         return_json = json.loads(r.text)
-        app.logger.warning("Cafe Answer " + return_json)
+        app.logger.warning("Cafe Answer " + str(return_json))
         if (return_json.get('error') != 'invalid_credentials'):
             break
 
@@ -1201,7 +1201,7 @@ def iran_apps_validation_request(product_id, purchase_token):
         app.logger.warning(url)
         r = requests.get(url, verify=False)
         return_json = json.loads(r.text)
-        app.logger.warning("Iran Apps Answer " + return_json)
+        app.logger.warning("Iran Apps Answer " + str(return_json))
         if (return_json.get('error') != 'invalid_credentials'):
             break
 
