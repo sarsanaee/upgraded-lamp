@@ -37,15 +37,15 @@ class Hmac(object):
                     a = data
                     d = datetime.strptime(a, "%m/%d/%Y %H:%M:%S")
                     converted_time = time.mktime(d.timetuple())
-                    if time.time() - converted_time > 20000:
-                        '''
-                        We check the expiration date in every request in order to recognize
-                        whether the request is created recently regardless the including data.
-                        '''
-                        message = {'status': '403', 'message': 'not authorized'}
-                        response = jsonify(message)
-                        response.status_code = 403
-                        return response
+                    # if time.time() - converted_time > 20000:
+                    #     '''
+                    #     We check the expiration date in every request in order to recognize
+                    #     whether the request is created recently regardless the including data.
+                    #     '''
+                    #     message = {'status': '403', 'message': 'not authorized'}
+                    #     response = jsonify(message)
+                    #     response.status_code = 403
+                    #     return response
                 except:
                     message = {'status': '403', 'message': 'not authorized'}
                     response = jsonify(message)
