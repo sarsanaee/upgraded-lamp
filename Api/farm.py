@@ -294,7 +294,7 @@ def edit_profile():
 
 
 @app.route('/V1/getid', methods=['POST'])
-@hm.check_hmac
+#@hm.check_hmac
 def get_id():
     """
     @api {post} /V1/getid getting UUID
@@ -836,6 +836,18 @@ def wins_number(id):
         return response
     abort(404)
 
+@app.route('/user_game_statistics/<int:id>', methods=['GET'])
+def user_game_statistics(id):
+    retrieved_user = User.query.filter_by(id=id).first()
+    if retrieved_user:
+        response = jsonify({"status": "OK",
+                            "Won": retrieved_user.wins,
+                            "Lost": retrieved_user.lose
+                            })
+        response.status_code = 200
+        return response
+    abort(404)
+
 
 @app.route('/wins/taksossharamje', methods=['POST'])
 def win_game():
@@ -849,6 +861,8 @@ def win_game():
         response.status_code = 201
         return response
     abort(404)
+
+
 
 
 @app.route('/special_package', methods=['GET'])
