@@ -61,7 +61,7 @@ admin.add_view(GameDbView(GameDb, db_session))
 admin.add_view(SpecialPackView(Special_Packages, db_session))
 admin.add_view(ApiView(Api, db_session))
 admin.add_view(OnlineServerView(OnlineServer, db_session))
-#admin.add_view(RoomStatusView(RoomStatus, db_session))
+admin.add_view(RoomStatusView(RoomStatus, db_session))
 
 
 @app.route('/get_time', methods=['POST'])
