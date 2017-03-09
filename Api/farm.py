@@ -518,8 +518,9 @@ def room_status():
         response = {}
         response["online_players"] = room_status_entry.online_players
         response["joined_players"] = room_status_entry.joined_players
+        response = jsonify(response)
         response.status_code = 200
-        return jsonify(response)
+        return response
     abort(404)
 
 
