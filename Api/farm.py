@@ -5,7 +5,7 @@ from flask import request, abort
 from flask import jsonify, json
 from Api.database import db_session
 from Api.models import User, Level, Transaction, Giftcards, AdminUsers, Store, \
-    GameDb, Special_Packages, Api, OnlineServer
+    GameDb, Special_Packages, Api, OnlineServer, RoomStatus
 from Api.database import init_db, Base
 from Api.flask_hmac import Hmac
 from flask_admin import Admin
@@ -13,7 +13,7 @@ import flask_login as login
 from Api.myadmin import UserView, GiftCardView, LevelView, \
     MyAdminIndexView, AdminUsersView, \
     TransactionView, StoreView, GameDbView, SpecialPackView, \
-    ApiView, OnlineServerView
+    ApiView, OnlineServerView, RoomStatusView
 from Api.jsonScheme import gameDbJsonScheme
 from werkzeug.contrib.cache import SimpleCache
 import requests
@@ -61,6 +61,7 @@ admin.add_view(GameDbView(GameDb, db_session))
 admin.add_view(SpecialPackView(Special_Packages, db_session))
 admin.add_view(ApiView(Api, db_session))
 admin.add_view(OnlineServerView(OnlineServer, db_session))
+#admin.add_view(RoomStatusView(RoomStatus, db_session))
 
 
 @app.route('/get_time', methods=['POST'])
@@ -510,6 +511,36 @@ def set_player_db():
         return response
     abort(404)
 
+@app.route('/room_status', methods=['GET'])
+def room_status():
+    room_status_entry = RoomStatus.query.filter_by().first()
+    if room_status_entry:
+        response = {}
+        response["online_players"] = room_status_entry.online_players
+        response["joined_players"] = room_status_entry.joined_players
+        response.status_code = 200
+        return jsonify(response)
+    abort(404)
+
+
+@app.route('/set_room_status', methods=['POST'])
+def set_room_status():
+    room_status_entry = RoomStatus.query.first()
+
+    #new_room_status = RoomStatus(request.json['online_players'], request.json['joined_players'])
+    if room_status_entry:
+        room_status_entry.online_players = request.json['online_players']
+        room_status_entry.joined_players = request.json['joined_players']
+    else:
+        new_room_status = RoomStatus(request.json['online_players'], request.json['joined_players'])
+        db_session.add(new_room_status)
+
+    db_session.commit()
+    response = {}
+    response["status"] = "finish"
+    response = jsonify(response)
+    response.status_code = 200
+    return response
 
 @app.route('/register', methods=['POST'])
 @hm.check_hmac
@@ -519,19 +550,19 @@ def register():
     if username_size < 5 or username_size > 20:
         # abort(411)
         response = jsonify({'status': 1, 'id': ''})
-        response_status_code = 200
+        response.status_code = 200
         return response
 
     if not email_regex.match(request.json['email']):
         # abort(410)
         response = jsonify({'status': 2, 'id': ''})
-        response_status_code = 200
+        response.status_code = 200
         return response
 
     retrieved_user = User.query.filter_by(username=request.json['username']).first()
     if retrieved_user:
         response = jsonify({'status': 3, 'id': ''})
-        response_status_code = 200
+        response.status_code = 200
         return response
         # abort(409)
     u = User(request.json['username'], request.json['password'], request.json['email'])

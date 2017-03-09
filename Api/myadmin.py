@@ -19,7 +19,14 @@ class ApiView(ModelView):
     def is_accessible(self):
         return login.current_user.is_authenticated()
 
+
 class OnlineServerView(ModelView):
+
+    def is_accessible(self):
+        return login.current_user.is_authenticated()
+
+
+class RoomStatusView(ModelView):
 
     def is_accessible(self):
         return login.current_user.is_authenticated()

@@ -169,6 +169,22 @@ class OnlineServer(Base):
         return '%r' % self.id
 
 
+class RoomStatus(Base):
+
+    __tablename__ = 'room_status'
+
+    id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True, index=True)
+    online_players = sqlalchemy.Column(sqlalchemy.Integer)
+    joined_players = sqlalchemy.Column(sqlalchemy.Integer)
+
+    def __init__(self, online_players=None, joined_players=None):
+        self.online_players = online_players
+        self.joined_players = joined_players
+
+    def __repr__(self):
+        return '%r' % self.id
+
+
 class Transaction(Base):
     __tablename__ = 'transaction'
 
