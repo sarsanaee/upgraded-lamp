@@ -1,5 +1,5 @@
 Flask
-flask-admin==1.4.0
+flask-admin
 flask-wtf
 sqlalchemy
 uwsgi
